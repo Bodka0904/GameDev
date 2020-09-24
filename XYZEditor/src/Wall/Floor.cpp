@@ -1,12 +1,10 @@
 #include "Floor.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-
-enum class WallPosition
-{
-	LEFT,
-	RIGHT
-};
 
 
 static glm::vec3 LineLineIntersection(const glm::vec3& startA, const glm::vec3& endA, const glm::vec3& startB, const glm::vec3& endB)
@@ -47,6 +45,92 @@ static glm::vec3 NormalFromPoints(const glm::vec3& p1, const glm::vec3& p2, cons
 	return glm::normalize(cross);
 }
 
+
+static std::pair<glm::vec3,glm::vec3> ResolveIntersection(const FloorNode& leftNode, const FloorNode& rightNode, const glm::vec3& startPoint, float height, float thicknessLeft, float thicknessRight)
+{
+	std::pair<glm::vec3, glm::vec3> result;
+	{
+		auto& begin = startPoint;
+		auto& leftEnd = leftNode.Position;
+		auto& rightEnd = rightNode.Position;
+
+		auto topFirstPointLeft = glm::vec3(begin.x, begin.z + height, begin.y);
+		auto topFirstPointRight = glm::vec3(begin.x, begin.z + height, begin.y);
+
+		auto leftEndPoint = glm::vec3(leftEnd.x, leftEnd.z, leftEnd.y);
+		auto rightEndPoint = glm::vec3(rightEnd.x, rightEnd.z, rightEnd.y);
+
+		glm::vec3 leftSegmentNormal = NormalFromPoints(topFirstPointLeft, leftEndPoint, begin);
+		glm::vec3 rightSegmentNormal = NormalFromPoints(topFirstPointRight, rightEndPoint, begin);
+
+		glm::vec3 leftEndPointT = glm::vec3(
+			leftEnd.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
+			leftEnd.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
+			0.0f
+		);
+
+		glm::vec3 leftStartPointT = glm::vec3(
+			begin.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
+			begin.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
+			0.0f
+		);
+
+		glm::vec3 rightEndPointT = glm::vec3(
+			rightEnd.x + rightSegmentNormal.x * -thicknessRight / 2.0f,
+			rightEnd.y + rightSegmentNormal.z * -thicknessRight / 2.0f,
+			0.0f
+		);
+
+		glm::vec3 rightStartPointT = glm::vec3(
+			begin.x + rightSegmentNormal.x * -thicknessRight / 2.0f,
+			begin.y + rightSegmentNormal.z * -thicknessRight / 2.0f,
+			0.0f
+		);
+		result.first = LineLineIntersection(leftEndPointT, leftStartPointT, rightEndPointT, rightStartPointT);
+	}
+
+	{
+		auto& begin = startPoint;
+		auto& leftEnd = rightNode.Position;
+		auto& rightEnd = leftNode.Position;
+
+		auto topFirstPointLeft = glm::vec3(begin.x, begin.z + height, begin.y);
+		auto topFirstPointRight = glm::vec3(begin.x, begin.z + height, begin.y);
+
+		auto leftEndPoint = glm::vec3(leftEnd.x, leftEnd.z, leftEnd.y);
+		auto rightEndPoint = glm::vec3(rightEnd.x, rightEnd.z, rightEnd.y);
+
+		glm::vec3 leftSegmentNormal = NormalFromPoints(topFirstPointLeft, leftEndPoint, begin);
+		glm::vec3 rightSegmentNormal = NormalFromPoints(topFirstPointRight, rightEndPoint, begin);
+
+		glm::vec3 leftEndPointT = glm::vec3(
+			leftEnd.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
+			leftEnd.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
+			0.0f
+		);
+
+		glm::vec3 leftStartPointT = glm::vec3(
+			begin.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
+			begin.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
+			0.0f
+		);
+
+		glm::vec3 rightEndPointT = glm::vec3(
+			rightEnd.x + rightSegmentNormal.x * -thicknessRight / 2.0f,
+			rightEnd.y + rightSegmentNormal.z * -thicknessRight / 2.0f,
+			0.0f
+		);
+
+		glm::vec3 rightStartPointT = glm::vec3(
+			begin.x + rightSegmentNormal.x * -thicknessRight / 2.0f,
+			begin.y + rightSegmentNormal.z * -thicknessRight / 2.0f,
+			0.0f
+		);
+		result.second = LineLineIntersection(leftEndPointT, leftStartPointT, rightEndPointT, rightStartPointT);
+	}
+	
+	return result;
+}
 
 static glm::vec3 ResolveRightLeftIntersection(const FloorNode& leftNode, const FloorNode& rightNode, const glm::vec3& startPoint, float height, float thicknessLeft, float thicknessRight)
 {
@@ -94,6 +178,7 @@ static glm::vec3 ResolveRightLeftIntersection(const FloorNode& leftNode, const F
 Floor::Floor()
 {
 	m_Mesh = XYZ::Ref<XYZ::Mesh>::Create();
+	m_IntersectionMesh = XYZ::Ref<XYZ::Mesh>::Create();
 }
 
 int Floor::CreateWall()
@@ -161,20 +246,33 @@ void Floor::GenerateMeshTest()
 {
 	size_t lastVertexCount = m_Mesh->Vertices.size();
 	size_t lastIndexCount = m_Mesh->Indices.size();
+	size_t lastGeneratedQuads = m_GeneratedQuads.size();
 	size_t lastLineCount = m_Lines.size();
 
 	m_Mesh->Vertices.clear();
 	m_Mesh->Indices.clear();
+	m_GeneratedQuads.clear();
 	m_Lines.clear();
 
 	m_Mesh->Vertices.reserve(lastVertexCount);
 	m_Mesh->Indices.reserve(lastIndexCount);
+	m_GeneratedQuads.reserve(lastGeneratedQuads);
 	m_Lines.reserve(lastLineCount);
 	m_Mesh->TextureID = 1;
+	m_IntersectionMesh->TextureID = 1;
 
 	m_FloorTree.Propagate([this](XYZ::Node<FloorNode>* parent, XYZ::Node<FloorNode>* child) {
 		if (parent)
 		{
+			if (!parent->GetData().Traversed)
+			{
+				XYZ::Vertex vertex;
+				vertex.Color = { 1,1,1,1 };
+				vertex.TexCoord = { 1,0 };
+				vertex.Position = { parent->GetData().Position,1.0f };
+				m_IntersectionMesh->Vertices.push_back(vertex);
+				parent->GetData().Traversed = true;
+			}
 			if (child->GetNextSiblingIndex() != XYZ::Node<FloorNode>::GetInvalidIndex())
 			{
 				auto& nextSibling = m_FloorTree[child->GetNextSiblingIndex()];
@@ -182,34 +280,70 @@ void Floor::GenerateMeshTest()
 
 				child->GetData().LeftSideOffset = intersection;
 				nextSibling.RightSideOffset = intersection;
+				
+				XYZ::Vertex vertex;
+				vertex.Color = { 1,1,1,1 };
+				vertex.TexCoord = { 0,1 };
+				vertex.Position = { intersection, 1.0f };
+
+				m_IntersectionMesh->Vertices.push_back(vertex);
+				
 			}
-			else
+			else if (child->HasPreviousSibling())
 			{
 				auto& firstChild = m_FloorTree[parent->GetFirstChildIndex()];
 				glm::vec3 intersection = ResolveRightLeftIntersection(firstChild, *child, parent->GetData().Position, 25.0f, 2.0f, 2.0f);
 
 				child->GetData().LeftSideOffset = intersection;
 				firstChild.RightSideOffset = intersection;
+
+				XYZ::Vertex vertex;
+				vertex.Color = { 1,1,1,1 };
+				vertex.TexCoord = { 1,0 };
+				vertex.Position = { intersection, 1.0f };
+
+				m_IntersectionMesh->Vertices.push_back(vertex);
+			}
+			else
+			{
+				// Does not work now, requires graph
+				auto intersection = ResolveIntersection(*parent,*child, parent->GetData().Position, 25.0f, 2.0f, 2.0f);
+				child->GetData().LeftSideOffset = intersection.first;
+				parent->GetData().RightSideOffset = intersection.first;
+				
+				child->GetData().RightSideOffset = intersection.second;
+				parent->GetData().LeftSideOffset = intersection.second;
 			}
 		}
 	});
 
+
 	m_FloorTree.Propagate([this](XYZ::Node<FloorNode>* parent, XYZ::Node<FloorNode>* child) {
+		
 		if (parent)
 		{
 			generateMeshFromTreeTest(parent->GetData(), child->GetData(), m_IndexOffset, 25, 2);
+			m_IndexOffset += 4;
 		}
+		
 	});
+	
+	generateIntersectionMesh();
 
 	m_IndexOffset = 0;
 }
 
 void Floor::SubmitToRenderer()
 {
-	XYZ::Renderer2D::SubmitMesh(glm::mat4(1), m_Mesh);
+	XYZ::MeshRenderer::SubmitMesh(glm::mat4(1), m_Mesh);
+	XYZ::MeshRenderer::SubmitMesh(glm::mat4(1), m_IntersectionMesh);
 	for (auto& line : m_Lines)
 	{
 		XYZ::Renderer2D::SubmitLine(line.Start, line.End, line.Color);
+	}
+	for (auto& transform : m_GeneratedQuads)
+	{
+		XYZ::Renderer2D::SubmitQuad(transform, { 0,0,1,1 }, 1, { 1, 0, 0, 1 });
 	}
 }
 
@@ -450,11 +584,35 @@ void Floor::generateMeshFromTreeTest(const FloorNode& p1, const FloorNode& p2, u
 	glm::vec3 p3l = { vertices[meshQuadCount + 2].Position.x,vertices[meshQuadCount + 2].Position.y,vertices[meshQuadCount + 2].Position.z };
 	glm::vec3 p4l = { vertices[meshQuadCount + 3].Position.x,vertices[meshQuadCount + 3].Position.y,vertices[meshQuadCount + 3].Position.z };
 
+	
+
 	m_Lines.push_back({ {1,0,0,1}, p1.Position,p2.Position });
+	glm::mat4 transform = glm::translate(glm::mat4(1), p1.Position) * glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.8f, 1));
+	m_GeneratedQuads.push_back(transform);
+	transform = glm::translate(glm::mat4(1), p2.Position) * glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.8f, 1));
+	m_GeneratedQuads.push_back(transform);
+
 
 	m_Lines.push_back({ {1,1,1,1}, p1l,p2l });
 	m_Lines.push_back({ {1,1,1,1}, p2l,p3l });
 	m_Lines.push_back({ {1,1,1,1}, p3l,p4l });
 	m_Lines.push_back({ {1,1,1,1}, p4l,p1l });
 	m_Lines.push_back({ {1,1,1,1}, p1l,p3l });
+}
+
+void Floor::generateIntersectionMesh()
+{
+	uint32_t count = 1;
+	for (auto& vertex : m_IntersectionMesh->Vertices)
+	{
+		m_IntersectionMesh->Indices.push_back(m_IndexOffset);
+		m_IntersectionMesh->Indices.push_back(m_IndexOffset + count);
+		m_IntersectionMesh->Indices.push_back(m_IndexOffset + count + 1);
+		count++;
+		if (count == 5)
+			break;
+	}
+	m_IntersectionMesh->Indices.push_back(m_IndexOffset);
+	m_IntersectionMesh->Indices.push_back(m_IndexOffset + count);
+	m_IntersectionMesh->Indices.push_back(m_IndexOffset + 1);
 }

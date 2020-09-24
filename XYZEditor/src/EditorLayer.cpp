@@ -110,16 +110,16 @@ namespace XYZ {
 		uint16_t secondPoint = m_Floor.CreatePointFromPoint({ -8,7,0 }, parentPoint, "Second Point");
 		uint16_t thirdPoint = m_Floor.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
 		uint16_t fourthPoint = m_Floor.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
-		//uint16_t fifthPoint = m_Floor.CreatePointFromPoint({ -15,6,0 }, firstPoint, "Fifth Point");
+		uint16_t fifthPoint = m_Floor.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
+		uint16_t sixthPoint = m_Floor.CreatePointFromPoint({ -15,6,0 }, firstPoint, "Sixth Point");
 
 		m_Floor.GenerateMeshTest();
 	}
 
 	void EditorLayer::OnDetach()
 	{
-		
-
 		NativeScriptEngine::Shutdown();
+		Renderer::Shutdown();
 	}
 	void EditorLayer::OnUpdate(Timestep ts)
 	{
@@ -138,7 +138,13 @@ namespace XYZ {
 		
 		Renderer2D::BeginScene({ m_EditorCamera.GetViewProjectionMatrix() });
 		Renderer2D::SetMaterial(m_Material);
+		MeshRenderer::BeginScene({ m_EditorCamera.GetViewProjectionMatrix() });
+		MeshRenderer::SetMaterial(m_Material);
+		
 		m_Floor.SubmitToRenderer();
+		
+		MeshRenderer::Flush();
+		MeshRenderer::EndScene();
 		Renderer2D::Flush();
 		Renderer2D::FlushLines();
 		Renderer2D::EndScene();

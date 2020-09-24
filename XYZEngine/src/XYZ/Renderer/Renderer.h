@@ -34,6 +34,9 @@ namespace XYZ {
 		*/
 		static void Init();
 
+
+		static void Shutdown();
+
 		/**
 		* Function handling window resizing
 		* @param[in] width   Width of the window

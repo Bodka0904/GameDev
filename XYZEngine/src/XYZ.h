@@ -15,6 +15,7 @@
 
 
 //-----Renderer-----//
+#include "XYZ/Renderer/MeshRenderer.h"
 #include "XYZ/Renderer/Renderer2D.h"
 #include "XYZ/Renderer/Renderer.h"
 #include "XYZ/Renderer/RenderCommand.h"

@@ -52,14 +52,19 @@ private:
 	void generateMeshFromWall(const Wall& wall, uint32_t indexOffset);
 	void generateMeshFromTree(const glm::vec3& p1, const glm::vec3& p2, uint32_t indexOffset, float height, float thickness);
 	void generateMeshFromTreeTest(const FloorNode& p1, const FloorNode& p2, uint32_t indexOffset, float height, float thickness);
+
+	void generateIntersectionMesh();
+
 private:
 	XYZ::FreeList<Wall> m_Walls;
 	std::vector<glm::vec3> m_GeneratedPoints;
+	std::vector<glm::mat4> m_GeneratedQuads;
 
 	XYZ::Tree<FloorNode> m_FloorTree;
 	uint32_t m_IndexOffset = 0;
 
 	XYZ::Ref<XYZ::Mesh> m_Mesh;
+	XYZ::Ref<XYZ::Mesh> m_IntersectionMesh;
 	std::vector<Line> m_Lines;
 
 	static constexpr unsigned int sc_DefaultNumberOfWallPoints = 4;

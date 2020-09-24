@@ -3,6 +3,7 @@
 #include "RenderCommand.h"
 #include "Renderer2D.h"
 #include "InGuiRenderer.h"
+#include "MeshRenderer.h"
 
 namespace XYZ {
 	Renderer* Renderer::s_Instance = new Renderer;
@@ -13,6 +14,14 @@ namespace XYZ {
 		RenderCommand::Init();
 		Renderer2D::Init();
 		InGuiRenderer::Init();
+		MeshRenderer::Init();
+	}
+
+	void Renderer::Shutdown()
+	{
+		Renderer2D::Shutdown();
+		InGuiRenderer::Shutdown();
+		MeshRenderer::Shutdown();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)
