@@ -69,3 +69,7 @@
 //------NativeScript-------//
 #include "XYZ/NativeScript/ScriptableEntity.h"
 
+
+//------DataStructures-------//
+#include "XYZ/Utils/DataStructures/FreeList.h"
+#include "XYZ/Utils/DataStructures/Tree.h"

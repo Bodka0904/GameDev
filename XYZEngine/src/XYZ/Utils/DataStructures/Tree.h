@@ -30,9 +30,30 @@ namespace XYZ {
 			return m_PreviousSibling != sc_NullIndex;
 		}
 
+		uint16_t GetIndex() const
+		{
+			return m_Index;
+		}
 		uint16_t GetParentIndex() const 
 		{ 
 			return m_Parent; 
+		}
+		uint16_t GetFirstChildIndex() const
+		{
+			return m_FirstChild;
+		}
+		uint16_t GetNextSiblingIndex() const
+		{
+			return m_NextSibling;
+		}
+		uint16_t GetPreviousSiblingIndex() const
+		{
+			return m_PreviousSibling;
+		}
+		
+		static uint16_t GetInvalidIndex()
+		{
+			return sc_NullIndex;
 		}
 
 		operator const T& () const { return m_Data; }
@@ -103,7 +124,7 @@ namespace XYZ {
 			vector[parent].m_FirstChild = m_Index;
 
 			// Call user setup
-			func(vector[m_Parent].m_Data, m_Data);
+			func(&vector[m_Parent], this);
 		}
 		void detachFromTree(std::vector<Node<T>>& vector)
 		{
@@ -235,13 +256,13 @@ namespace XYZ {
 			if (index == Node<T>::sc_NullIndex)
 				index = m_Root;
 			
-			func(nullptr, &m_Data[index].m_Data);
+			func(nullptr, &m_Data[index]);
 			while (index != Node<T>::sc_NullIndex)
 			{
 				if (m_Data[index].HasChild())
 				{
 					uint16_t firstChild = m_Data[index].m_FirstChild;
-					propagate(m_Data[index].m_Data, firstChild, func);
+					propagate(m_Data[index], firstChild, func);
 				}
 				index = m_Data[index].m_NextSibling;
 			}
@@ -271,15 +292,15 @@ namespace XYZ {
 		}
 	private:
 		template <typename Function>
-		void propagate(T& parentValue,uint16_t index,Function& func)
+		void propagate(Node<T>& parentValue,uint16_t index,Function& func)
 		{
 			while (index != Node<T>::sc_NullIndex)
 			{
-				func(&parentValue, &m_Data[index].m_Data);
+				func(&parentValue, &m_Data[index]);
 				if (m_Data[index].HasChild())
 				{
 					uint16_t firstChild = m_Data[index].m_FirstChild;
-					propagate(m_Data[index].m_Data,firstChild,func);
+					propagate(m_Data[index], firstChild, func);
 				}
 				index = m_Data[index].m_NextSibling;
 			}

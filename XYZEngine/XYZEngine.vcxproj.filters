@@ -31,9 +31,6 @@
     <Filter Include="src\XYZ\ECS">
       <UniqueIdentifier>{71311159-DDE6-894E-66DB-8325D28F8052}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\XYZ\Editor">
-      <UniqueIdentifier>{FDBCF028-E98A-E42E-D21E-5555BE8BC093}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\XYZ\Event">
       <UniqueIdentifier>{38A43FE2-A464-BB18-6D9F-0496D91E00F5}</UniqueIdentifier>
     </Filter>
@@ -296,6 +293,21 @@
     </ClInclude>
     <ClInclude Include="src\XYZ\Gui\Widget.h">
       <Filter>src\XYZ\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XYZ\InGui\InGui.h">
+      <Filter>src\XYZ\InGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XYZ\InGui\InGuiCamera.h">
+      <Filter>src\XYZ\InGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XYZ\InGui\InGuiFactory.h">
+      <Filter>src\XYZ\InGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XYZ\InGui\InGuiLayer.h">
+      <Filter>src\XYZ\InGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XYZ\InGui\InGuiStructures.h">
+      <Filter>src\XYZ\InGui</Filter>
     </ClInclude>
     <ClInclude Include="src\XYZ\NativeScript\NativeScriptEngine.h">
       <Filter>src\XYZ\NativeScript</Filter>
@@ -1839,11 +1851,6 @@
     <ClInclude Include="vendor\yaml-cpp\src\token.h">
       <Filter>vendor\yaml-cpp\src</Filter>
     </ClInclude>
-    <ClInclude Include="src\XYZ\InGui\InGuiLayer.h" />
-    <ClInclude Include="src\XYZ\InGui\InGui.h" />
-    <ClInclude Include="src\XYZ\InGui\InGuiFactory.h" />
-    <ClInclude Include="src\XYZ\InGui\InGuiStructures.h" />
-    <ClInclude Include="src\XYZ\InGui\InGuiCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\OpenGL\OpenGLAPIContext.cpp">
@@ -1924,6 +1931,9 @@
     <ClCompile Include="src\XYZ\ECS\SystemManager.cpp">
       <Filter>src\XYZ\ECS</Filter>
     </ClCompile>
+    <ClCompile Include="src\XYZ\FSM\StateMachine.cpp">
+      <Filter>src\XYZ\FSM</Filter>
+    </ClCompile>
     <ClCompile Include="src\XYZ\Gui\Button.cpp">
       <Filter>src\XYZ\Gui</Filter>
     </ClCompile>
@@ -1944,6 +1954,21 @@
     </ClCompile>
     <ClCompile Include="src\XYZ\Gui\Text.cpp">
       <Filter>src\XYZ\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XYZ\InGui\InGui.cpp">
+      <Filter>src\XYZ\InGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XYZ\InGui\InGuiCamera.cpp">
+      <Filter>src\XYZ\InGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XYZ\InGui\InGuiFactory.cpp">
+      <Filter>src\XYZ\InGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XYZ\InGui\InGuiLayer.cpp">
+      <Filter>src\XYZ\InGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XYZ\InGui\InGuiStructures.cpp">
+      <Filter>src\XYZ\InGui</Filter>
     </ClCompile>
     <ClCompile Include="src\XYZ\NativeScript\NativeScriptEngine.cpp">
       <Filter>src\XYZ\NativeScript</Filter>
@@ -2206,16 +2231,5 @@
     <ClCompile Include="vendor\yaml-cpp\src\tag.cpp">
       <Filter>vendor\yaml-cpp\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\XYZ\InGui\InGuiLayer.cpp" />
-    <ClCompile Include="src\XYZ\InGui\InGui.cpp" />
-    <ClCompile Include="src\XYZ\InGui\InGuiFactory.cpp" />
-    <ClCompile Include="src\XYZ\InGui\InGuiStructures.cpp" />
-    <ClCompile Include="src\XYZ\FSM\StateMachine.cpp" />
-    <ClCompile Include="src\XYZ\InGui\InGuiCamera.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="vendor\RCC\RuntimeCompiler\SimpleFileWatcher\FileWatcherLinux.cpp~">
-      <Filter>vendor\RCC\RuntimeCompiler\SimpleFileWatcher</Filter>
-    </None>
   </ItemGroup>
 </Project>
