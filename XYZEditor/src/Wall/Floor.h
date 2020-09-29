@@ -27,9 +27,12 @@ struct FloorNode
 	std::string DebugName;
 	glm::vec3 Position;
 
+	bool ParentGenerated = false;
 	glm::vec3 RightSideParentOffset;
 	glm::vec3 LeftSideParentOffset;
 	
+
+	bool ChildGenerated = false;
 	glm::vec3 RightSideChildOffset;
 	glm::vec3 LeftSideChildOffset;
 

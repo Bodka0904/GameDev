@@ -10,10 +10,6 @@
 
 static glm::vec3 LineLineIntersection(const glm::vec3& startA, const glm::vec3& endA, const glm::vec3& startB, const glm::vec3& endB)
 {
-	auto text = startA;
-	auto test = endA;
-	auto testas = startB;
-	auto gasf = endB;
 	// Line AB represented as a1x + b1y = c1 
 	float a1 = endA.y - startA.y;
 	float b1 = startA.x - endA.x;
@@ -47,100 +43,14 @@ static glm::vec3 NormalFromPoints(const glm::vec3& p1, const glm::vec3& p2, cons
 }
 
 
-static std::pair<glm::vec3, glm::vec3> ResolveIntersection(const FloorNode& leftNode, const FloorNode& rightNode, const glm::vec3& startPoint, float height, float thicknessLeft, float thicknessRight)
-{
-	std::pair<glm::vec3, glm::vec3> result;
-	{
-		auto& begin = startPoint;
-		auto& leftEnd = leftNode.Position;
-		auto& rightEnd = rightNode.Position;
-
-		auto topFirstPointLeft = glm::vec3(begin.x, begin.z + height, begin.y);
-		auto topFirstPointRight = glm::vec3(begin.x, begin.z + height, begin.y);
-
-		auto leftEndPoint = glm::vec3(leftEnd.x, leftEnd.z, leftEnd.y);
-		auto rightEndPoint = glm::vec3(rightEnd.x, rightEnd.z, rightEnd.y);
-
-		glm::vec3 leftSegmentNormal = NormalFromPoints(topFirstPointLeft, leftEndPoint, begin);
-		glm::vec3 rightSegmentNormal = NormalFromPoints(topFirstPointRight, rightEndPoint, begin);
-
-		glm::vec3 leftEndPointT = glm::vec3(
-			leftEnd.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
-			leftEnd.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
-			0.0f
-		);
-
-		glm::vec3 leftStartPointT = glm::vec3(
-			begin.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
-			begin.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
-			0.0f
-		);
-
-		glm::vec3 rightEndPointT = glm::vec3(
-			rightEnd.x + rightSegmentNormal.x * -thicknessRight / 2.0f,
-			rightEnd.y + rightSegmentNormal.z * -thicknessRight / 2.0f,
-			0.0f
-		);
-
-		glm::vec3 rightStartPointT = glm::vec3(
-			begin.x + rightSegmentNormal.x * -thicknessRight / 2.0f,
-			begin.y + rightSegmentNormal.z * -thicknessRight / 2.0f,
-			0.0f
-		);
-		result.first = LineLineIntersection(leftEndPointT, leftStartPointT, rightEndPointT, rightStartPointT);
-	}
-
-	{
-		auto& begin = startPoint;
-		auto& leftEnd = rightNode.Position;
-		auto& rightEnd = leftNode.Position;
-
-		auto topFirstPointLeft = glm::vec3(begin.x, begin.z + height, begin.y);
-		auto topFirstPointRight = glm::vec3(begin.x, begin.z + height, begin.y);
-
-		auto leftEndPoint = glm::vec3(leftEnd.x, leftEnd.z, leftEnd.y);
-		auto rightEndPoint = glm::vec3(rightEnd.x, rightEnd.z, rightEnd.y);
-
-		glm::vec3 leftSegmentNormal = NormalFromPoints(topFirstPointLeft, leftEndPoint, begin);
-		glm::vec3 rightSegmentNormal = NormalFromPoints(topFirstPointRight, rightEndPoint, begin);
-
-		glm::vec3 leftEndPointT = glm::vec3(
-			leftEnd.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
-			leftEnd.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
-			0.0f
-		);
-
-		glm::vec3 leftStartPointT = glm::vec3(
-			begin.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
-			begin.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
-			0.0f
-		);
-
-		glm::vec3 rightEndPointT = glm::vec3(
-			rightEnd.x + rightSegmentNormal.x * -thicknessRight / 2.0f,
-			rightEnd.y + rightSegmentNormal.z * -thicknessRight / 2.0f,
-			0.0f
-		);
-
-		glm::vec3 rightStartPointT = glm::vec3(
-			begin.x + rightSegmentNormal.x * -thicknessRight / 2.0f,
-			begin.y + rightSegmentNormal.z * -thicknessRight / 2.0f,
-			0.0f
-		);
-		result.second = LineLineIntersection(leftEndPointT, leftStartPointT, rightEndPointT, rightStartPointT);
-	}
-
-	return result;
-}
-
 static glm::vec3 ResolveRightLeftIntersection(const FloorNode& leftNode, const FloorNode& rightNode, const glm::vec3& startPoint, float height, float thicknessLeft, float thicknessRight)
 {
-	auto& begin = startPoint;
+	auto begin = glm::vec3{ startPoint.x,startPoint.z,startPoint.y };
 	auto& leftEnd = leftNode.Position;
 	auto& rightEnd = rightNode.Position;
 
-	auto topFirstPointLeft = glm::vec3(begin.x, begin.z + height, begin.y);
-	auto topFirstPointRight = glm::vec3(begin.x, begin.z + height, begin.y);
+	auto topFirstPointLeft = glm::vec3(begin.x, begin.y + height, begin.z);
+	auto topFirstPointRight = glm::vec3(begin.x, begin.y + height, begin.z);
 
 	auto leftEndPoint = glm::vec3(leftEnd.x, leftEnd.z, leftEnd.y);
 	auto rightEndPoint = glm::vec3(rightEnd.x, rightEnd.z, rightEnd.y);
@@ -156,7 +66,7 @@ static glm::vec3 ResolveRightLeftIntersection(const FloorNode& leftNode, const F
 
 	glm::vec3 leftStartPointT = glm::vec3(
 		begin.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
-		begin.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
+		begin.z + leftSegmentNormal.z * thicknessLeft / 2.0f,
 		0.0f
 	);
 
@@ -168,7 +78,7 @@ static glm::vec3 ResolveRightLeftIntersection(const FloorNode& leftNode, const F
 
 	glm::vec3 rightStartPointT = glm::vec3(
 		begin.x + rightSegmentNormal.x * -thicknessRight / 2.0f,
-		begin.y + rightSegmentNormal.z * -thicknessRight / 2.0f,
+		begin.z + rightSegmentNormal.z * -thicknessRight / 2.0f,
 		0.0f
 	);
 
@@ -263,37 +173,33 @@ namespace XYZ {
 		m_IntersectionMesh->TextureID = 1;
 
 		m_Graph.Traverse([this](GraphVertex<FloorNode>& source, GraphVertex<FloorNode>& destination, GraphVertex<FloorNode>* next, GraphVertex<FloorNode>* previous) {
-			
-			
-			std::cout << source.Data.DebugName << " " << source.Index << " --> " << destination.Data.DebugName << " " << destination.Index << std::endl;
+				
+			//std::cout << source.Data.DebugName << " " << source.Index << " --> " << destination.Data.DebugName << " " << destination.Index << std::endl;
 			auto& parent = source.Data;
 			auto& child = destination.Data;
 		
-
-			if (!source.Data.Traversed)
+				
+			if (source.Data.DebugName == "Second Point")
 			{
-				glm::vec3 intersection = ResolveRightLeftIntersection(m_Graph.GetFirstChild(source.Index).Data, m_Graph.GetLastChild(source.Index).Data, parent.Position, 25.0f, 2.0f, 2.0f);
-				m_Graph.GetLastChild(source.Index).Data.LeftSideChildOffset = intersection;
-				m_Graph.GetFirstChild(source.Index).Data.RightSideChildOffset = intersection;
-
-				source.Data.Traversed = true;
+				std::cout << "h" << std::endl;
 			}
+			
 			if (next)
 			{
 				glm::vec3 intersection = ResolveRightLeftIntersection(next->Data, child, parent.Position, 25.0f, 2.0f, 2.0f);
+	
 				child.LeftSideChildOffset = intersection;
 				next->Data.RightSideChildOffset = intersection;
+				child.ChildGenerated = true;			
 			}
 			generateParentOffset(source.Data, child, 2.0f, 2.0f);
-
 		});
 
 		m_Graph.Traverse([this](GraphVertex<FloorNode>& source, GraphVertex<FloorNode>& destination, GraphVertex<FloorNode>* next, GraphVertex<FloorNode>* previous) {
 			
-		
 			generateMeshFromGraphTest(source.Data, destination.Data, m_IndexOffset, 25, 2);
 			m_IndexOffset += 4;
-
+		
 		});
 	}
 
@@ -304,7 +210,7 @@ namespace XYZ {
 		auto& begin = p1.Position;
 		auto& end = p2.Position;
 
-		auto topFirstPoint = glm::vec3(begin.x, begin.y + height, begin.z);
+		auto topFirstPoint = glm::vec3(begin.x, begin.z + height, begin.y);
 
 		auto endPoint = glm::vec3(end.x, end.z, end.y);
 		auto startPoint = glm::vec3(begin.x, begin.z, begin.y);
@@ -388,7 +294,7 @@ namespace XYZ {
 		auto& begin = p1.Position;
 		auto& end = p2.Position;
 
-		auto topFirstPoint = glm::vec3(begin.x, begin.y + height, begin.z);
+		auto topFirstPoint = glm::vec3(begin.x, begin.z + height, begin.y);
 
 		auto endPoint = glm::vec3(end.x, end.z, end.y);
 		auto startPoint = glm::vec3(begin.x, begin.z, begin.y);
@@ -470,7 +376,7 @@ namespace XYZ {
 		auto& begin = p1.Position;
 		auto& end = p2.Position;
 
-		auto topFirstPoint = glm::vec3(begin.x, begin.y + height, begin.z);
+		auto topFirstPoint = glm::vec3(begin.x, begin.z + height, begin.y);
 
 		auto endPoint = glm::vec3(end.x, end.z, end.y);
 		auto startPoint = glm::vec3(begin.x, begin.z, begin.y);
@@ -480,7 +386,6 @@ namespace XYZ {
 		XYZ::Vertex vertex;
 		vertex.Color = { 1,1,1,1 };
 		vertex.TexCoord = { 0,0 };
-
 
 		vertex.Position = glm::vec4(
 			end.x + segmentNormal.x * thickness / 2.0f,

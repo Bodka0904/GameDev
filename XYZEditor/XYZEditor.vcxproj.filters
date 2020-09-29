@@ -7,6 +7,9 @@
     <Filter Include="Tools">
       <UniqueIdentifier>{16CF2D0E-82E3-55BF-4B65-F91EB73852F0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Wall">
+      <UniqueIdentifier>{756F8E7C-61A6-8F0D-0A93-7510F6A80B0F}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\EditorLayer.h" />
@@ -19,9 +22,15 @@
     <ClInclude Include="src\Tools\EditorCamera.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\Wall\Wall.h" />
-    <ClInclude Include="src\Wall\Floor.h" />
-    <ClInclude Include="src\Wall\FloorTest.h" />
+    <ClInclude Include="src\Wall\Floor.h">
+      <Filter>Wall</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Wall\FloorTest.h">
+      <Filter>Wall</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Wall\Wall.h">
+      <Filter>Wall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorLayer.cpp" />
@@ -34,9 +43,15 @@
     <ClCompile Include="src\Tools\EditorCamera.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
+    <ClCompile Include="src\Wall\Floor.cpp">
+      <Filter>Wall</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Wall\FloorTest.cpp">
+      <Filter>Wall</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Wall\Wall.cpp">
+      <Filter>Wall</Filter>
+    </ClCompile>
     <ClCompile Include="src\ZEditorApp.cpp" />
-    <ClCompile Include="src\Wall\Wall.cpp" />
-    <ClCompile Include="src\Wall\Floor.cpp" />
-    <ClCompile Include="src\Wall\FloorTest.cpp" />
   </ItemGroup>
 </Project>

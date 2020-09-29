@@ -98,21 +98,27 @@ namespace XYZ {
 
 
 		{
-			size_t parentPoint = m_FloorTest.CreatePoint({ 0,0,0 }, "Parent");
+			
+
+
+			size_t parentPoint = m_FloorTest.CreatePoint({ 0,-2,0 }, "Parent");
 			size_t fifthPoint = m_FloorTest.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
 			size_t fourthPoint = m_FloorTest.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
 			size_t thirdPoint = m_FloorTest.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
-			size_t secondPoint = m_FloorTest.CreatePointFromPoint({ -8,7,0 }, parentPoint, "Second Point");
+			size_t secondPoint = m_FloorTest.CreatePointFromPoint({ -8,7,0 },parentPoint, "Second Point");
 			size_t firstPoint = m_FloorTest.CreatePointFromPoint({ -5,-10,0 }, parentPoint, "First Point");
 			
-			////size_t sixthPoint = m_FloorTest.CreatePoint({ -15,6,0 }, "Sixth Point");
-			//size_t seventhPoint = m_FloorTest.CreatePoint({ -15,10,0 }, "Seventh Point");
-			//
-			//
-			////m_FloorTest.Connect(secondPoint, sixthPoint);
+
+			size_t sixthPoint = m_FloorTest.CreatePoint({ -4,12,0 }, "Sixth Point");
+			size_t seventhPoint = m_FloorTest.CreatePoint({ -15,9,0 }, "Seventh Point");
+			size_t eighthPoint = m_FloorTest.CreatePoint({ -15,-3, 0 }, "Eighth Point");
+			size_t ninthPoint = m_FloorTest.CreatePoint({ -7,-3, 0 }, "Ninth Point");
+			
 			//m_FloorTest.Connect(secondPoint, parentPoint);
-			//m_FloorTest.Connect(secondPoint, seventhPoint);
-			//
+			m_FloorTest.Connect(secondPoint, sixthPoint);
+			m_FloorTest.Connect(secondPoint, seventhPoint);
+			m_FloorTest.Connect(secondPoint, eighthPoint);
+			m_FloorTest.Connect(secondPoint, ninthPoint);
 			//m_FloorTest.Connect(seventhPoint, secondPoint);
 			//m_FloorTest.Connect(seventhPoint, firstPoint);
 
@@ -134,7 +140,7 @@ namespace XYZ {
 	
 		glm::vec2 winSize = { Input::GetWindowSize().first, Input::GetWindowSize().second };
 	
-		m_FBO->Bind();	
+		//m_FBO->Bind();	
 		RenderCommand::SetClearColor(glm::vec4(0.2, 0.2, 0.5, 1));
 		RenderCommand::Clear();
 		m_Scene->OnUpdate(ts);
@@ -158,7 +164,7 @@ namespace XYZ {
 		m_FBO->Unbind();
 		
 
-		if (m_ActiveWindow)
+		//if (m_ActiveWindow)
 		{
 			m_EditorCamera.OnUpdate(ts);		
 		}

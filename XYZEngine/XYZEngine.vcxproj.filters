@@ -372,6 +372,9 @@
     <ClInclude Include="src\XYZ\Renderer\MeshFactory.h">
       <Filter>src\XYZ\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\XYZ\Renderer\MeshRenderer.h">
+      <Filter>src\XYZ\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\XYZ\Renderer\RenderCommand.h">
       <Filter>src\XYZ\Renderer</Filter>
     </ClInclude>
@@ -427,6 +430,9 @@
       <Filter>src\XYZ</Filter>
     </ClInclude>
     <ClInclude Include="src\XYZ\Utils\DataStructures\FreeList.h">
+      <Filter>src\XYZ\Utils\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XYZ\Utils\DataStructures\Graph.h">
       <Filter>src\XYZ\Utils\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="src\XYZ\Utils\DataStructures\HashGrid2D.h">
@@ -1851,8 +1857,6 @@
     <ClInclude Include="vendor\yaml-cpp\src\token.h">
       <Filter>vendor\yaml-cpp\src</Filter>
     </ClInclude>
-    <ClInclude Include="src\XYZ\Renderer\MeshRenderer.h" />
-    <ClInclude Include="src\XYZ\Utils\DataStructures\Graph.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\OpenGL\OpenGLAPIContext.cpp">
@@ -2032,6 +2036,9 @@
     <ClCompile Include="src\XYZ\Renderer\MeshFactory.cpp">
       <Filter>src\XYZ\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\XYZ\Renderer\MeshRenderer.cpp">
+      <Filter>src\XYZ\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\XYZ\Renderer\RenderCommand.cpp">
       <Filter>src\XYZ\Renderer</Filter>
     </ClCompile>
@@ -2078,6 +2085,9 @@
       <Filter>src\XYZ\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\XYZ\Utils\DataStructures\FreeList.cpp">
+      <Filter>src\XYZ\Utils\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XYZ\Utils\DataStructures\Graph.cpp">
       <Filter>src\XYZ\Utils\DataStructures</Filter>
     </ClCompile>
     <ClCompile Include="src\XYZ\Utils\DataStructures\HashGrid2D.cpp">
@@ -2233,7 +2243,5 @@
     <ClCompile Include="vendor\yaml-cpp\src\tag.cpp">
       <Filter>vendor\yaml-cpp\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\XYZ\Renderer\MeshRenderer.cpp" />
-    <ClCompile Include="src\XYZ\Utils\DataStructures\Graph.cpp" />
   </ItemGroup>
 </Project>

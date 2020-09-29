@@ -63,6 +63,8 @@ namespace XYZ {
 					GraphVertex<T>* previous = nullptr;
 					if (i < adj.size() - 1)
 						next = &m_Data[adj[i + 1]];
+					else if (i != 0)
+						next = &m_Data[adj[0]];
 					if (i > 0)
 						previous = &m_Data[adj[i - 1]];
 

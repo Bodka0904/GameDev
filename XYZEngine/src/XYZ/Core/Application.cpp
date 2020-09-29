@@ -52,10 +52,10 @@ namespace XYZ {
 				for (Layer* layer : m_LayerStack)	
 					layer->OnUpdate(timestep);
 				
-				m_InGuiLayer->Begin();
-				for (Layer* layer : m_LayerStack)
-					layer->OnInGuiRender(timestep);
-				m_InGuiLayer->End();
+				//m_InGuiLayer->Begin();
+				//for (Layer* layer : m_LayerStack)
+				//	layer->OnInGuiRender(timestep);
+				//m_InGuiLayer->End();
 			}
 			m_Window->Update();
 		}
