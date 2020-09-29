@@ -9,6 +9,7 @@
 
 
 #include "Wall/Floor.h"
+#include "Wall/FloorTest.h"
 
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -47,6 +48,8 @@ namespace XYZ {
 		AssetManager m_AssetManager;
 
 		Floor m_Floor;
+		FloorTest m_FloorTest;
+
 		int m_WallOne;
 		int m_WallTwo;
 		int m_WallThree;

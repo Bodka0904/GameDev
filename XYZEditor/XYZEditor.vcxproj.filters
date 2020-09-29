@@ -21,6 +21,7 @@
     </ClInclude>
     <ClInclude Include="src\Wall\Wall.h" />
     <ClInclude Include="src\Wall\Floor.h" />
+    <ClInclude Include="src\Wall\FloorTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorLayer.cpp" />
@@ -36,5 +37,6 @@
     <ClCompile Include="src\ZEditorApp.cpp" />
     <ClCompile Include="src\Wall\Wall.cpp" />
     <ClCompile Include="src\Wall\Floor.cpp" />
+    <ClCompile Include="src\Wall\FloorTest.cpp" />
   </ItemGroup>
 </Project>

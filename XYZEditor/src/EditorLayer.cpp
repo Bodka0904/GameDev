@@ -40,22 +40,22 @@ namespace XYZ {
 				(*storage)[i].ScriptableEntity = (ScriptableEntity*)NativeScriptEngine::CreateScriptObject((*storage)[i].ScriptObjectName);
 				if ((*storage)[i].ScriptableEntity)
 				{
-				
+
 				}
 			}
 		});
 
-		NativeScriptEngine::SetOnRecompileCallback([this]() {		
+		NativeScriptEngine::SetOnRecompileCallback([this]() {
 			auto storage = m_Scene->GetECS().GetComponentStorage<NativeScriptComponent>();
 			for (int i = 0; i < storage->Size(); ++i)
 			{
 				if ((*storage)[i].ScriptableEntity)
 				{
-					
+
 				}
 			}
 		});
-		
+
 
 		auto& app = Application::Get();
 		m_FBO = FrameBuffer::Create({ app.GetWindow().GetWidth(),app.GetWindow().GetHeight() });
@@ -71,7 +71,7 @@ namespace XYZ {
 
 		m_SceneHierarchyPanel.SetContext(m_Scene);
 
-		
+
 		InGui::RenderWindow("Scene", m_FBO->GetColorAttachment(0).RendererID, { 0,0 }, { 200,200 }, 25.0f);
 		InGui::End();
 		auto flags = InGui::GetWindowFlags("scene");
@@ -83,37 +83,41 @@ namespace XYZ {
 		InGui::SetWindowFlags("test", (MenuEnabled | Visible | EventListener));
 
 
+		{
+			uint16_t parentPoint = m_Floor.CreatePoint({ 0,0,0 }, "Parent");
+			uint16_t firstPoint = m_Floor.CreatePointFromPoint({ -5,-10,0 }, parentPoint, "First Point");
+			uint16_t secondPoint = m_Floor.CreatePointFromPoint({ -8,7,0 }, parentPoint, "Second Point");
+			uint16_t thirdPoint = m_Floor.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
+			uint16_t fourthPoint = m_Floor.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
+			uint16_t fifthPoint = m_Floor.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
+			uint16_t sixthPoint = m_Floor.CreatePointFromPoint({ -15,6,0 }, firstPoint, "Sixth Point");
+			//uint16_t seventhPoint = m_Floor.CreatePointFromPoint({ 10,20,0 }, fourthPoint, "Seventh Point");
 
-		//m_WallOne = m_Floor.CreateWall();
-		//m_WallTwo = m_Floor.CreateWall();
-		//m_WallThree = m_Floor.CreateWall();
-		//
-		//auto& wall1 = m_Floor.GetWall(m_WallOne);
-		//auto& wall2 = m_Floor.GetWall(m_WallTwo);
-		//auto& wall3 = m_Floor.GetWall(m_WallThree);
-		//
-		//wall1.End[0].Position = { 0,0,0 };
-		//wall1.End[1].Position = { 10,10,0 };
-		//
-		//wall2.End[0].Position = { 0,0,0 };
-		//wall2.End[1].Position = { 0,10,0 };
-		//
-		//wall3.End[0].Position = { -5,-10,0 };
-		//wall3.End[1].Position = { 0,0,0 };
-		//
-		//wall2.End[0].ConnectedWalls[0] = m_WallOne;
+			m_Floor.GenerateMeshTest();
+		}
 
-		//m_Floor.GenerateMesh();
 
-		uint16_t parentPoint = m_Floor.CreatePoint({ 0,0,0 }, "Parent");
-		uint16_t firstPoint = m_Floor.CreatePointFromPoint({ -5,-10,0 }, parentPoint,"First Point");
-		uint16_t secondPoint = m_Floor.CreatePointFromPoint({ -8,7,0 }, parentPoint, "Second Point");
-		uint16_t thirdPoint = m_Floor.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
-		uint16_t fourthPoint = m_Floor.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
-		uint16_t fifthPoint = m_Floor.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
-		uint16_t sixthPoint = m_Floor.CreatePointFromPoint({ -15,6,0 }, firstPoint, "Sixth Point");
+		{
+			size_t parentPoint = m_FloorTest.CreatePoint({ 0,0,0 }, "Parent");
+			size_t fifthPoint = m_FloorTest.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
+			size_t fourthPoint = m_FloorTest.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
+			size_t thirdPoint = m_FloorTest.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
+			size_t secondPoint = m_FloorTest.CreatePointFromPoint({ -8,7,0 }, parentPoint, "Second Point");
+			size_t firstPoint = m_FloorTest.CreatePointFromPoint({ -5,-10,0 }, parentPoint, "First Point");
+			
+			////size_t sixthPoint = m_FloorTest.CreatePoint({ -15,6,0 }, "Sixth Point");
+			//size_t seventhPoint = m_FloorTest.CreatePoint({ -15,10,0 }, "Seventh Point");
+			//
+			//
+			////m_FloorTest.Connect(secondPoint, sixthPoint);
+			//m_FloorTest.Connect(secondPoint, parentPoint);
+			//m_FloorTest.Connect(secondPoint, seventhPoint);
+			//
+			//m_FloorTest.Connect(seventhPoint, secondPoint);
+			//m_FloorTest.Connect(seventhPoint, firstPoint);
 
-		m_Floor.GenerateMeshTest();
+			m_FloorTest.GenerateMeshTest();
+		}
 	}
 
 	void EditorLayer::OnDetach()
@@ -141,8 +145,10 @@ namespace XYZ {
 		MeshRenderer::BeginScene({ m_EditorCamera.GetViewProjectionMatrix() });
 		MeshRenderer::SetMaterial(m_Material);
 		
-		m_Floor.SubmitToRenderer();
-		
+		//m_Floor.SubmitToRenderer();
+		m_FloorTest.SubmitToRenderer();
+
+
 		MeshRenderer::Flush();
 		MeshRenderer::EndScene();
 		Renderer2D::Flush();

@@ -17,14 +17,23 @@ struct FloorNode
 		: 
 		DebugName(name),
 		Position(pos),
-		RightSideOffset(0),
-		LeftSideOffset(0),
+		RightSideParentOffset(0),
+		LeftSideParentOffset(0),
+		RightSideChildOffset(0),
+		LeftSideChildOffset(0),
+		IndexInBuffer(-1),
 		Traversed(traversed)
 	{}
 	std::string DebugName;
 	glm::vec3 Position;
-	glm::vec3 RightSideOffset;
-	glm::vec3 LeftSideOffset;
+
+	glm::vec3 RightSideParentOffset;
+	glm::vec3 LeftSideParentOffset;
+	
+	glm::vec3 RightSideChildOffset;
+	glm::vec3 LeftSideChildOffset;
+
+	int64_t IndexInBuffer;
 	bool Traversed;
 };
 
@@ -33,10 +42,6 @@ class Floor
 public:
 	Floor();
 
-	int CreateWall();
-	void DeleteWall(int index);
-	void GenerateMesh();
-	void GenerateMeshFromTree();
 	void GenerateMeshTest();
 
 	void SubmitToRenderer();
@@ -44,23 +49,21 @@ public:
 	uint16_t CreatePoint(const glm::vec3& point, const std::string& name);
 	uint16_t CreatePointFromPoint(const glm::vec3& point, uint16_t parent, const std::string& name);
 
-	const Wall& GetWall(int index) const { return m_Walls[index]; }
-	Wall& GetWall(int index) { return m_Walls[index]; }
+
 
 private:
-	std::pair<glm::vec3, glm::vec3> resolveWallCollisions(const Wall& wall);
-	void generateMeshFromWall(const Wall& wall, uint32_t indexOffset);
-	void generateMeshFromTree(const glm::vec3& p1, const glm::vec3& p2, uint32_t indexOffset, float height, float thickness);
-	void generateMeshFromTreeTest(const FloorNode& p1, const FloorNode& p2, uint32_t indexOffset, float height, float thickness);
+
+	void generateMeshFromTree(const FloorNode& p1, FloorNode& p2, uint32_t indexOffset, float height, float thickness);
 
 	void generateIntersectionMesh();
 
 private:
-	XYZ::FreeList<Wall> m_Walls;
 	std::vector<glm::vec3> m_GeneratedPoints;
 	std::vector<glm::mat4> m_GeneratedQuads;
 
 	XYZ::Tree<FloorNode> m_FloorTree;
+	
+
 	uint32_t m_IndexOffset = 0;
 
 	XYZ::Ref<XYZ::Mesh> m_Mesh;

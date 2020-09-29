@@ -1852,6 +1852,7 @@
       <Filter>vendor\yaml-cpp\src</Filter>
     </ClInclude>
     <ClInclude Include="src\XYZ\Renderer\MeshRenderer.h" />
+    <ClInclude Include="src\XYZ\Utils\DataStructures\Graph.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\API\OpenGL\OpenGLAPIContext.cpp">
@@ -2233,5 +2234,6 @@
       <Filter>vendor\yaml-cpp\src</Filter>
     </ClCompile>
     <ClCompile Include="src\XYZ\Renderer\MeshRenderer.cpp" />
+    <ClCompile Include="src\XYZ\Utils\DataStructures\Graph.cpp" />
   </ItemGroup>
 </Project>

@@ -74,3 +74,4 @@
 //------DataStructures-------//
 #include "XYZ/Utils/DataStructures/FreeList.h"
 #include "XYZ/Utils/DataStructures/Tree.h"
+#include "XYZ/Utils/DataStructures/Graph.h"
