@@ -83,47 +83,66 @@ namespace XYZ {
 		InGui::SetWindowFlags("test", (MenuEnabled | Visible | EventListener));
 
 
-		{
-			uint16_t parentPoint = m_Floor.CreatePoint({ 0,0,0 }, "Parent");
-			uint16_t firstPoint = m_Floor.CreatePointFromPoint({ -5,-10,0 }, parentPoint, "First Point");
-			uint16_t secondPoint = m_Floor.CreatePointFromPoint({ -8,7,0 }, parentPoint, "Second Point");
-			uint16_t thirdPoint = m_Floor.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
-			uint16_t fourthPoint = m_Floor.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
-			uint16_t fifthPoint = m_Floor.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
-			uint16_t sixthPoint = m_Floor.CreatePointFromPoint({ -15,6,0 }, firstPoint, "Sixth Point");
-			//uint16_t seventhPoint = m_Floor.CreatePointFromPoint({ 10,20,0 }, fourthPoint, "Seventh Point");
-
-			m_Floor.GenerateMeshTest();
-		}
-
-
-		{
-			
-
-
+		{	
 			size_t parentPoint = m_FloorTest.CreatePoint({ 0,-2,0 }, "Parent");
 			size_t fifthPoint = m_FloorTest.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
 			size_t fourthPoint = m_FloorTest.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
 			size_t thirdPoint = m_FloorTest.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
 			size_t secondPoint = m_FloorTest.CreatePointFromPoint({ -8,7,0 },parentPoint, "Second Point");
-			size_t firstPoint = m_FloorTest.CreatePointFromPoint({ -5,-10,0 }, parentPoint, "First Point");
+			size_t firstPoint = m_FloorTest.CreatePointFromPoint({ -5,-25,0 }, parentPoint, "First Point");
 			
-
+		
 			size_t sixthPoint = m_FloorTest.CreatePoint({ -4,12,0 }, "Sixth Point");
 			size_t seventhPoint = m_FloorTest.CreatePoint({ -15,9,0 }, "Seventh Point");
 			size_t eighthPoint = m_FloorTest.CreatePoint({ -15,-3, 0 }, "Eighth Point");
 			size_t ninthPoint = m_FloorTest.CreatePoint({ -7,-3, 0 }, "Ninth Point");
-			
+			size_t tenthPoint = m_FloorTest.CreatePoint({ 0,-2, 0 }, "Tenth Point");
+			size_t eleventhPoint = m_FloorTest.CreatePoint({ -15,-10, 0 }, "Eleventh Point");
+		
+		
 			//m_FloorTest.Connect(secondPoint, parentPoint);
 			m_FloorTest.Connect(secondPoint, sixthPoint);
 			m_FloorTest.Connect(secondPoint, seventhPoint);
 			m_FloorTest.Connect(secondPoint, eighthPoint);
 			m_FloorTest.Connect(secondPoint, ninthPoint);
-			//m_FloorTest.Connect(seventhPoint, secondPoint);
-			//m_FloorTest.Connect(seventhPoint, firstPoint);
-
-			m_FloorTest.GenerateMeshTest();
+			m_FloorTest.Connect(firstPoint, ninthPoint);
+			
+		
+			//m_FloorTest.Connect(ninthPoint, secondPoint);
+			//m_FloorTest.Connect(ninthPoint, eleventhPoint);
+		
+			m_FloorTest.GenerateMesh();
 		}
+
+		//{
+		//	size_t parentPoint = m_FloorTest.CreatePoint({ 0,-2,0 }, "Parent");
+		//	size_t fifthPoint = m_FloorTest.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
+		//	size_t fourthPoint = m_FloorTest.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
+		//	size_t thirdPoint = m_FloorTest.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
+		//	size_t secondPoint = m_FloorTest.CreatePointFromPoint({ -8,7,0 },parentPoint, "Second Point");
+		//	size_t firstPoint = m_FloorTest.CreatePointFromPoint({ -5,-25,0 },parentPoint, "First Point");
+		//
+		//
+		//	size_t sixthPoint = m_FloorTest.CreatePoint({ -4,12,0 }, "Sixth Point");
+		//	size_t seventhPoint = m_FloorTest.CreatePoint({ -15,9,0 }, "Seventh Point");
+		//	size_t eighthPoint = m_FloorTest.CreatePoint({ -15,-3, 0 }, "Eighth Point");
+		//	size_t ninthPoint = m_FloorTest.CreatePoint({ -7,-3, 0 }, "Ninth Point");
+		//	size_t tenthPoint = m_FloorTest.CreatePoint({ 20,-30, 0 }, "Tenth Point");
+		//	size_t eleventhPoint = m_FloorTest.CreatePoint({ -15,-10, 0 }, "Eleventh Point");
+		//	size_t twelvethPoint = m_FloorTest.CreatePoint({ -20,-40,0 }, "Twelveth Point");
+		//
+		//	//m_FloorTest.Connect(secondPoint, parentPoint);
+		//	m_FloorTest.Connect(secondPoint, sixthPoint);
+		//	m_FloorTest.Connect(secondPoint, seventhPoint);
+		//	m_FloorTest.Connect(secondPoint, eighthPoint);
+		//	m_FloorTest.Connect(secondPoint, ninthPoint);
+		//	m_FloorTest.Connect(firstPoint, ninthPoint);
+		//
+		//	m_FloorTest.Connect(ninthPoint, eleventhPoint);
+		//
+		//
+		//	m_FloorTest.GenerateMeshTest();
+		//}
 	}
 
 	void EditorLayer::OnDetach()

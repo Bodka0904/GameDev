@@ -46,8 +46,11 @@ namespace XYZ {
 		{
 			if (edge.Source >= m_AdjList.size())
 				m_AdjList.resize(edge.Source);
+			if (edge.Destination >= m_AdjList.size())
+				m_AdjList.resize(edge.Destination);
 
 			m_AdjList[edge.Source].push_back(edge.Destination);
+			m_AdjList[edge.Destination].push_back(edge.Source);
 		}
 
 
@@ -74,7 +77,18 @@ namespace XYZ {
 				counter++;
 			}
 		}
+		template <typename Func>
+		void TraverseRecursive(const Func& func)
+		{
+			bool* visited = new bool[m_AdjList.size()];
+			for (size_t i = 0; i < m_AdjList.size(); i++)
+				visited[i] = false;
 
+			traverseRecursive(0, 0, nullptr, nullptr, visited, func);
+
+			delete[]visited;
+		}
+	
 		template <typename Func>
 		void TraverseChildren(size_t parent, const Func& func)
 		{	
@@ -94,6 +108,11 @@ namespace XYZ {
 			return m_Data[m_AdjList[parent][0]];
 		}
 
+		const GraphVertex<T>& GetLastChild(size_t parent) const
+		{
+			return m_Data[m_AdjList[parent].back()];
+		}
+
 		GraphVertex<T>& GetLastChild(size_t parent)
 		{
 			return m_Data[m_AdjList[parent].back()];
@@ -111,6 +130,40 @@ namespace XYZ {
 
 
 	private:
+		template <typename Func>
+		void traverseRecursive(size_t parent, size_t child, T* next, T* previous, bool* visited, const Func& func)
+		{
+			visited[parent] = true;
+			if (parent != child)
+			{
+				func(m_Data[parent].Data, m_Data[child].Data, next, previous, m_AdjList[child].empty());
+			}
+			for (size_t i = 0; i < m_AdjList[child].size(); ++i)
+			{
+				if (m_AdjList[child].size() - 1 > i)
+					next = &m_Data[m_AdjList[child][i + 1]].Data;
+				else if (i != 0)
+					next = &m_Data[m_AdjList[child][0]].Data;
+				if (i > 0)
+					previous = &m_Data[m_AdjList[child][i - 1]].Data;
+				else
+					previous = &m_Data[m_AdjList[child][m_AdjList[child].size() - 1]].Data;
+
+
+				if (!visited[m_AdjList[child][i]])
+				{			
+					traverseRecursive(child, m_AdjList[child][i], next, previous, visited, func);
+				}
+				else
+				{
+					func(m_Data[child].Data, m_Data[m_AdjList[child][i]].Data, next, previous, false);
+				}
+			}
+		}
+
+
+	private:
+
 		// construct a vector of vectors to represent an adjacency list
 		std::vector<std::vector<size_t>> m_AdjList;
 

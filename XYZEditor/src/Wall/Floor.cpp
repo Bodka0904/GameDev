@@ -310,7 +310,7 @@ void Floor::generateMeshFromTree(const FloorNode& p1, FloorNode& p2, uint32_t in
 
 	glm::vec3 segmentNormal = NormalFromPoints(topFirstPoint, endPoint, startPoint);
 
-	p2.IndexInBuffer = m_Mesh->Vertices.size();
+	
 	XYZ::Vertex vertex;
 	vertex.Color = { 1,1,1,1 };
 	vertex.TexCoord = { 0,0 };

@@ -11,6 +11,12 @@ struct Line
 	glm::vec3 End;
 };
 
+
+struct TestLine
+{
+	glm::vec3 Point;
+};
+
 struct FloorNode
 {
 	FloorNode(const std::string& name, const glm::vec3& pos,bool traversed)
@@ -21,22 +27,18 @@ struct FloorNode
 		LeftSideParentOffset(0),
 		RightSideChildOffset(0),
 		LeftSideChildOffset(0),
-		IndexInBuffer(-1),
 		Traversed(traversed)
 	{}
 	std::string DebugName;
 	glm::vec3 Position;
 
-	bool ParentGenerated = false;
 	glm::vec3 RightSideParentOffset;
 	glm::vec3 LeftSideParentOffset;
-	
 
-	bool ChildGenerated = false;
 	glm::vec3 RightSideChildOffset;
 	glm::vec3 LeftSideChildOffset;
 
-	int64_t IndexInBuffer;
+
 	bool Traversed;
 };
 
@@ -72,6 +74,7 @@ private:
 	XYZ::Ref<XYZ::Mesh> m_Mesh;
 	XYZ::Ref<XYZ::Mesh> m_IntersectionMesh;
 	std::vector<Line> m_Lines;
+
 
 	static constexpr unsigned int sc_DefaultNumberOfWallPoints = 4;
 	static constexpr float sc_DefaultWallThickness = 2.0f;

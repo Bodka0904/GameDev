@@ -100,6 +100,11 @@ namespace XYZ {
 		{
 			XYZ::Renderer2D::SubmitLine(line.Start, line.End, line.Color);
 		}
+		
+		for (size_t i  = 0; i < m_TestLines.size(); i += 2)
+		{
+			XYZ::Renderer2D::SubmitLine(m_TestLines[i].Point, m_TestLines[i + 1].Point, { 1,1,1,1 });
+		}
 		//for (auto& transform : m_GeneratedQuads)
 		//{
 		//	XYZ::Renderer2D::SubmitQuad(transform, { 0,0,1,1 }, 1, { 1, 0, 0, 1 });
@@ -119,88 +124,84 @@ namespace XYZ {
 	{
 		m_Graph.AddEdge({ parent,child });
 	}
+
 	void FloorTest::GenerateMesh()
 	{
 		m_Mesh->TextureID = 1;
 		m_IntersectionMesh->TextureID = 1;
-	
+
 		m_Graph.Traverse([this](GraphVertex<FloorNode>& source, GraphVertex<FloorNode>& destination, GraphVertex<FloorNode>* next, GraphVertex<FloorNode>* previous) {
 
+			std::cout << source.Data.DebugName << " " << source.Index << " --> " << destination.Data.DebugName << " " << destination.Index << std::endl;
 			auto& parent = source.Data;
 			auto& child = destination.Data;
-			
-			
-	
-				
-			if (next)
-			{		
-				glm::vec3 intersection = ResolveRightLeftIntersection(next->Data, child, parent.Position, 25.0f, 2.0f, 2.0f);
-				
-				child.LeftSideChildOffset = intersection;
-				next->Data.RightSideChildOffset = intersection;
-				
-				XYZ::Vertex vertex;
-				vertex.Color = { 1,1,1,1 };
-				vertex.TexCoord = { 0,1 };
-				vertex.Position = { intersection, 1.0f };
-				
-				m_IntersectionMesh->Vertices.push_back(vertex);
-			}
-			if (!source.Data.Traversed)
-			{
-				glm::vec3 intersection = ResolveRightLeftIntersection(m_Graph.GetFirstChild(source.Index).Data, m_Graph.GetLastChild(source.Index).Data, parent.Position, 25.0f, 2.0f, 2.0f);
-				m_Graph.GetLastChild(source.Index).Data.LeftSideChildOffset = intersection;
-				m_Graph.GetFirstChild(source.Index).Data.RightSideChildOffset = intersection;
-				source.Data.Traversed = true;
-			}
+
+
 
 			if (!child.Traversed)
 			{
-				destination.Data.IndexInBuffer = m_Mesh->Vertices.size();
-				generateMeshFromGraph(source.Data, destination.Data, m_IndexOffset, 25, 2);
-				m_IndexOffset += 4;
+				generateParentOffset(source.Data, child, 2.0f, 2.0f);
 			}
-			else
-			{
-				adjustNodeEnd(source.Data, destination.Data, 25, 2.0f);
-			}
-		});	
-	}
-
-	void FloorTest::GenerateMeshTest()
-	{
-		m_Mesh->TextureID = 1;
-		m_IntersectionMesh->TextureID = 1;
-
-		m_Graph.Traverse([this](GraphVertex<FloorNode>& source, GraphVertex<FloorNode>& destination, GraphVertex<FloorNode>* next, GraphVertex<FloorNode>* previous) {
-				
-			//std::cout << source.Data.DebugName << " " << source.Index << " --> " << destination.Data.DebugName << " " << destination.Index << std::endl;
-			auto& parent = source.Data;
-			auto& child = destination.Data;
-		
-				
-			if (source.Data.DebugName == "Second Point")
-			{
-				std::cout << "h" << std::endl;
-			}
-			
 			if (next)
 			{
 				glm::vec3 intersection = ResolveRightLeftIntersection(next->Data, child, parent.Position, 25.0f, 2.0f, 2.0f);
 	
-				child.LeftSideChildOffset = intersection;
-				next->Data.RightSideChildOffset = intersection;
-				child.ChildGenerated = true;			
+				if (!child.Traversed)
+					child.LeftSideChildOffset = intersection;
+				else
+					source.Data.LeftSideParentOffset = intersection;
+
+				if (!next->Data.Traversed)
+					next->Data.RightSideChildOffset = intersection;
+				else
+					source.Data.RightSideParentOffset = intersection;
+
+				source.Data.Traversed = true;
 			}
-			generateParentOffset(source.Data, child, 2.0f, 2.0f);
+			
 		});
+
 
 		m_Graph.Traverse([this](GraphVertex<FloorNode>& source, GraphVertex<FloorNode>& destination, GraphVertex<FloorNode>* next, GraphVertex<FloorNode>* previous) {
 			
 			generateMeshFromGraphTest(source.Data, destination.Data, m_IndexOffset, 25, 2);
 			m_IndexOffset += 4;
 		
-		});
+		});	
+	}
+
+	void FloorTest::GenerateMeshTest()
+	{
+		m_Mesh->TextureID = 1;
+		m_IntersectionMesh->TextureID = 1;	
+
+		m_Graph.TraverseRecursive([this](FloorNode& source, FloorNode& destination, FloorNode* next, FloorNode* previous, bool end){
+			
+			auto& parent = source;
+			auto& child = destination;
+			
+			
+			std::cout << source.DebugName << "   " << destination.DebugName << std::endl;
+
+			if (next && previous)
+			{
+				if (source.DebugName == "Second Point")
+				{
+					
+				}
+				glm::vec3 intersection = ResolveRightLeftIntersection(*next, destination, source.Position, 25.0f, 2.0f, 2.0f);
+				child.LeftSideChildOffset = intersection;
+				intersection = ResolveRightLeftIntersection(destination, *previous, source.Position, 25.0f, 2.0f, 2.0f);
+				child.RightSideChildOffset = intersection;		
+	
+				generateMeshPoints(source, destination, m_IndexOffset, 25.0f, 2.0f);
+				if (end)
+				{
+					generateEndPoints(source, destination, m_IndexOffset, 25.0f, 2.0f);		
+				}
+				m_IndexOffset += 4;
+			}
+		});	
 	}
 
 
@@ -403,13 +404,14 @@ namespace XYZ {
 		vertex.TexCoord = { 0,1 };
 		p2.RightSideParentOffset = vertex.Position;
 	}
-	void FloorTest::adjustNodeEnd(const FloorNode& p1, FloorNode& p2, float height, float thickness)
+
+	void FloorTest::generateMeshPoints(const FloorNode& p1, const FloorNode& p2, uint32_t indexOffset, float height, float thickness)
 	{
 		size_t meshQuadCount = m_Mesh->Vertices.size();
 		auto& begin = p1.Position;
 		auto& end = p2.Position;
 
-		auto topFirstPoint = glm::vec3(begin.x, begin.y + height, begin.z);
+		auto topFirstPoint = glm::vec3(begin.x, begin.z + height, begin.y);
 
 		auto endPoint = glm::vec3(end.x, end.z, end.y);
 		auto startPoint = glm::vec3(begin.x, begin.z, begin.y);
@@ -427,14 +429,67 @@ namespace XYZ {
 			begin.z, 1.0f
 		);
 		vertex.TexCoord = { 1,1 };
-		m_Mesh->Vertices[p1.IndexInBuffer + 2] = vertex;
+		m_Mesh->Vertices.push_back(vertex);
+		m_TestLines.push_back({ vertex.Position });
 
 		vertex.Position = glm::vec4(
 			p2.RightSideChildOffset.x,
 			p2.RightSideChildOffset.y,
 			begin.z, 1.0f
 		);
+
 		vertex.TexCoord = { 0,1 };
-		m_Mesh->Vertices[p1.IndexInBuffer + 3] = vertex;
+		m_Mesh->Vertices.push_back(vertex);
+		m_TestLines.push_back({ vertex.Position });
+
+		m_Mesh->Indices.push_back(m_IndexOffset + 0);
+		m_Mesh->Indices.push_back(m_IndexOffset + 1);
+		m_Mesh->Indices.push_back(m_IndexOffset + 2);
+		m_Mesh->Indices.push_back(m_IndexOffset + 2);
+		m_Mesh->Indices.push_back(m_IndexOffset + 3);
+		m_Mesh->Indices.push_back(m_IndexOffset + 0);
+
+
+		m_Lines.push_back({ {1,0,0,1}, p1.Position,p2.Position });	
 	}
+
+	void FloorTest::generateEndPoints(const FloorNode& p1, const FloorNode& p2, uint32_t indexOffset, float height, float thickness)
+	{
+		size_t meshQuadCount = m_Mesh->Vertices.size();
+		auto& begin = p1.Position;
+		auto& end = p2.Position;
+
+		auto topFirstPoint = glm::vec3(begin.x, begin.z + height, begin.y);
+
+		auto endPoint = glm::vec3(end.x, end.z, end.y);
+		auto startPoint = glm::vec3(begin.x, begin.z, begin.y);
+
+		glm::vec3 segmentNormal = NormalFromPoints(topFirstPoint, endPoint, startPoint);
+
+		XYZ::Vertex vertex;
+		vertex.Color = { 1,1,1,1 };
+		vertex.TexCoord = { 0,0 };
+		
+		vertex.Position = glm::vec4(
+			end.x + segmentNormal.x * thickness / 2.0f,
+			end.y + segmentNormal.z * thickness / 2.0f,
+			end.z, 1.0f
+		);
+		vertex.TexCoord = { 0,0 };
+		m_Mesh->Vertices.push_back(vertex);
+		m_TestLines.push_back({ vertex.Position });
+
+
+		vertex.Position = glm::vec4(
+			end.x + segmentNormal.x * -thickness / 2.0f,
+			end.y + segmentNormal.z * -thickness / 2.0f,
+			end.z, 1.0f
+		);
+		vertex.TexCoord = { 1,0 };
+		m_Mesh->Vertices.push_back(vertex);
+		m_TestLines.push_back({ vertex.Position });
+		
+
+	}
+	
 }
