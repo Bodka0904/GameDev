@@ -130,41 +130,46 @@ namespace XYZ {
 		m_Mesh->TextureID = 1;
 		m_IntersectionMesh->TextureID = 1;
 
-		m_Graph.Traverse([this](GraphVertex<FloorNode>& source, GraphVertex<FloorNode>& destination, GraphVertex<FloorNode>* next, GraphVertex<FloorNode>* previous) {
+		m_Graph.Traverse([this](FloorNode& source, FloorNode& destination, FloorNode* next, FloorNode* previous) {
 
-			std::cout << source.Data.DebugName << " " << source.Index << " --> " << destination.Data.DebugName << " " << destination.Index << std::endl;
-			auto& parent = source.Data;
-			auto& child = destination.Data;
+			std::cout << source.DebugName << " "  << " --> " << destination.DebugName << std::endl;
+			auto& parent = source;
+			auto& child = destination;
 
-
-
+			if (parent.DebugName == "Eighth Point")
+			{
+				std::cout << std::endl;
+			}
+			
 			if (!child.Traversed)
 			{
-				generateParentOffset(source.Data, child, 2.0f, 2.0f);
+				generateParentOffset(parent, child, 2.0f, 2.0f);
 			}
 			if (next)
 			{
-				glm::vec3 intersection = ResolveRightLeftIntersection(next->Data, child, parent.Position, 25.0f, 2.0f, 2.0f);
-	
+				glm::vec3 intersection = ResolveRightLeftIntersection(*next, child, parent.Position, 25.0f, 2.0f, 2.0f);
+
 				if (!child.Traversed)
 					child.LeftSideChildOffset = intersection;
 				else
-					source.Data.LeftSideParentOffset = intersection;
+					parent.LeftSideParentOffset = intersection;
 
-				if (!next->Data.Traversed)
-					next->Data.RightSideChildOffset = intersection;
+				if (!next->Traversed)
+					next->RightSideChildOffset = intersection;
 				else
-					source.Data.RightSideParentOffset = intersection;
+					parent.RightSideParentOffset = intersection;
 
-				source.Data.Traversed = true;
+				parent.Traversed = true;
 			}
+			
+
 			
 		});
 
 
-		m_Graph.Traverse([this](GraphVertex<FloorNode>& source, GraphVertex<FloorNode>& destination, GraphVertex<FloorNode>* next, GraphVertex<FloorNode>* previous) {
+		m_Graph.Traverse([this](FloorNode& source, FloorNode& destination, FloorNode* next, FloorNode* previous) {
 			
-			generateMeshFromGraphTest(source.Data, destination.Data, m_IndexOffset, 25, 2);
+			generateMeshFromGraphTest(source, destination, m_IndexOffset, 25, 2);
 			m_IndexOffset += 4;
 		
 		});	
@@ -185,10 +190,6 @@ namespace XYZ {
 
 			if (next && previous)
 			{
-				if (source.DebugName == "Second Point")
-				{
-					
-				}
 				glm::vec3 intersection = ResolveRightLeftIntersection(*next, destination, source.Position, 25.0f, 2.0f, 2.0f);
 				child.LeftSideChildOffset = intersection;
 				intersection = ResolveRightLeftIntersection(destination, *previous, source.Position, 25.0f, 2.0f, 2.0f);

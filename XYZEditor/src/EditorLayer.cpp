@@ -96,8 +96,7 @@ namespace XYZ {
 			size_t seventhPoint = m_FloorTest.CreatePoint({ -15,9,0 }, "Seventh Point");
 			size_t eighthPoint = m_FloorTest.CreatePoint({ -15,-3, 0 }, "Eighth Point");
 			size_t ninthPoint = m_FloorTest.CreatePoint({ -7,-3, 0 }, "Ninth Point");
-			size_t tenthPoint = m_FloorTest.CreatePoint({ 0,-2, 0 }, "Tenth Point");
-			size_t eleventhPoint = m_FloorTest.CreatePoint({ -15,-10, 0 }, "Eleventh Point");
+			size_t tenthPoint = m_FloorTest.CreatePoint({ -15,-10, 0 }, "Tenth Point");
 		
 		
 			//m_FloorTest.Connect(secondPoint, parentPoint);
@@ -105,12 +104,15 @@ namespace XYZ {
 			m_FloorTest.Connect(secondPoint, seventhPoint);
 			m_FloorTest.Connect(secondPoint, eighthPoint);
 			m_FloorTest.Connect(secondPoint, ninthPoint);
-			m_FloorTest.Connect(firstPoint, ninthPoint);
-			
-		
+
+
+			m_FloorTest.Connect(ninthPoint, tenthPoint);
 			//m_FloorTest.Connect(ninthPoint, secondPoint);
-			//m_FloorTest.Connect(ninthPoint, eleventhPoint);
+			size_t test = m_FloorTest.CreatePointFromPoint({ -30,0,0 }, eighthPoint, "Test Point");
+			m_FloorTest.Connect(eighthPoint, tenthPoint);
+			//m_FloorTest.Connect(firstPoint, eleventhPoint);
 		
+			
 			m_FloorTest.GenerateMesh();
 		}
 
@@ -131,13 +133,12 @@ namespace XYZ {
 		//	size_t eleventhPoint = m_FloorTest.CreatePoint({ -15,-10, 0 }, "Eleventh Point");
 		//	size_t twelvethPoint = m_FloorTest.CreatePoint({ -20,-40,0 }, "Twelveth Point");
 		//
-		//	//m_FloorTest.Connect(secondPoint, parentPoint);
+		//	m_FloorTest.Connect(secondPoint, parentPoint);
 		//	m_FloorTest.Connect(secondPoint, sixthPoint);
 		//	m_FloorTest.Connect(secondPoint, seventhPoint);
 		//	m_FloorTest.Connect(secondPoint, eighthPoint);
 		//	m_FloorTest.Connect(secondPoint, ninthPoint);
-		//	m_FloorTest.Connect(firstPoint, ninthPoint);
-		//
+		//	m_FloorTest.Connect(ninthPoint, secondPoint);
 		//	m_FloorTest.Connect(ninthPoint, eleventhPoint);
 		//
 		//

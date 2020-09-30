@@ -62,16 +62,17 @@ namespace XYZ {
 			{
 				for (size_t i = 0; i < adj.size(); ++i)
 				{
-					GraphVertex<T>* next = nullptr;
-					GraphVertex<T>* previous = nullptr;
+					T* next = nullptr;
+					T* previous = nullptr;
 					if (i < adj.size() - 1)
-						next = &m_Data[adj[i + 1]];
+						next = &m_Data[adj[i + 1]].Data;
 					else if (i != 0)
-						next = &m_Data[adj[0]];
+						next = &m_Data[adj[0]].Data;
 					if (i > 0)
-						previous = &m_Data[adj[i - 1]];
+						previous = &m_Data[adj[i - 1]].Data;
+					
 
-					func(m_Data[counter], m_Data[adj[i]], next, previous);
+					func(m_Data[counter].Data, m_Data[adj[i]].Data, next, previous);
 				}
 				
 				counter++;

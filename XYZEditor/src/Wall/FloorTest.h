@@ -16,8 +16,11 @@ namespace XYZ {
 		size_t CreatePoint(const glm::vec3& point, const std::string& name);
 		size_t CreatePointFromPoint(const glm::vec3& point, size_t parent, const std::string& name);
 		void Connect(size_t parent, size_t child);
+		
+		// Non recursive
 		void GenerateMesh();
 
+		// Recurisve
 		void GenerateMeshTest();
 	private:
 		void generateMeshFromGraph(const FloorNode& p1,const FloorNode& p2, uint32_t indexOffset, float height, float thickness);
