@@ -58,6 +58,7 @@ static glm::vec3 ResolveRightLeftIntersection(const FloorNode& leftNode, const F
 	glm::vec3 leftSegmentNormal = NormalFromPoints(topFirstPointLeft, leftEndPoint, begin);
 	glm::vec3 rightSegmentNormal = NormalFromPoints(topFirstPointRight, rightEndPoint, begin);
 
+
 	glm::vec3 leftEndPointT = glm::vec3(
 		leftEnd.x + leftSegmentNormal.x * thicknessLeft / 2.0f,
 		leftEnd.y + leftSegmentNormal.z * thicknessLeft / 2.0f,
@@ -95,6 +96,8 @@ namespace XYZ {
 	void FloorTest::SubmitToRenderer()
 	{
 		XYZ::MeshRenderer::SubmitMesh(glm::mat4(1), m_Mesh);
+
+
 		XYZ::MeshRenderer::SubmitMesh(glm::mat4(1), m_IntersectionMesh);
 		for (auto& line : m_Lines)
 		{
@@ -129,6 +132,40 @@ namespace XYZ {
 	{
 		m_Mesh->TextureID = 1;
 		m_IntersectionMesh->TextureID = 1;
+		auto& list = m_Graph.GetAdjList();
+		for (size_t parent = 0; parent < list.size(); ++parent)
+		{
+			if (!list[parent].empty())
+			{
+				glm::vec2 start = m_Graph.GetVertex(parent).Data.Position;
+				glm::vec2 end = m_Graph.GetVertex(list[parent][0]).Data.Position;
+				glm::vec2 defaultV = end - start;
+				std::sort(list[parent].begin(), list[parent].end(), [&](size_t a, size_t b) {
+
+					auto& p1 = m_Graph.GetVertex(parent).Data.Position;
+					auto& p00 = m_Graph.GetVertex(a).Data.Position;
+					auto& p01 = m_Graph.GetVertex(b).Data.Position;
+
+					glm::vec2 dir0 = p1 - p00;
+					glm::vec2 dir1 = p1 - p01;
+
+					float angle0 = 0.0f;
+					{
+						float dot = dir0.x * defaultV.x + dir0.y * defaultV.y;
+						float det = dir0.x * defaultV.y - dir0.y * defaultV.x;
+						angle0 = atan2(det, dot);
+					}
+					float angle1 = 0.0f;
+					{
+						float dot = dir1.x * defaultV.x + dir1.y * defaultV.y;
+						float det = dir1.x * defaultV.y - dir1.y * defaultV.x;
+						angle1 = atan2(det, dot);
+					}
+
+					return angle0 > angle1;
+				});
+			}
+		}
 
 		m_Graph.Traverse([this](FloorNode& source, FloorNode& destination, FloorNode* next, FloorNode* previous) {
 
@@ -136,33 +173,32 @@ namespace XYZ {
 			auto& parent = source;
 			auto& child = destination;
 
-			if (parent.DebugName == "Eighth Point")
-			{
-				std::cout << std::endl;
-			}
+			
 			
 			if (!child.Traversed)
 			{
 				generateParentOffset(parent, child, 2.0f, 2.0f);
 			}
-			if (next)
+			if (next && previous)
 			{
-				glm::vec3 intersection = ResolveRightLeftIntersection(*next, child, parent.Position, 25.0f, 2.0f, 2.0f);
 
-				if (!child.Traversed)
-					child.LeftSideChildOffset = intersection;
-				else
-					parent.LeftSideParentOffset = intersection;
 
-				if (!next->Traversed)
-					next->RightSideChildOffset = intersection;
-				else
-					parent.RightSideParentOffset = intersection;
+			   //
+				//if (!child.Traversed)
+				//	child.LeftSideChildOffset = intersection;
+				//else
+				//	parent.LeftSideParentOffset = intersection;
+			   //
+				//if (!next->Traversed)
+				//	next->RightSideChildOffset = intersection;
+				//else
+				//	parent.RightSideParentOffset = intersection;
+			   //
+			
+
 
 				parent.Traversed = true;
 			}
-			
-
 			
 		});
 
@@ -179,30 +215,122 @@ namespace XYZ {
 	{
 		m_Mesh->TextureID = 1;
 		m_IntersectionMesh->TextureID = 1;	
+	
+		for (int i = 0; i < 20; ++i)
+		{
+			for (int j = 0; j < 20; ++j)
+			{
+				traversed[i][j] = true;
+			}
+		}
+		auto& list = m_Graph.GetAdjList();
+		for (size_t parent = 0; parent < list.size(); ++parent)
+		{
+			if (!list[parent].empty())
+			{
+				glm::vec2 start = m_Graph.GetVertex(parent).Data.Position;
+				glm::vec2 end = m_Graph.GetVertex(list[parent][0]).Data.Position;
+				glm::vec2 defaultV = end - start;
+				std::sort(list[parent].begin() + 1, list[parent].end(), [&](size_t a, size_t b) {
 
-		m_Graph.TraverseRecursive([this](FloorNode& source, FloorNode& destination, FloorNode* next, FloorNode* previous, bool end){
+					auto& p1 = m_Graph.GetVertex(parent).Data.Position;
+					auto& p00 = m_Graph.GetVertex(a).Data.Position;
+					auto& p01 = m_Graph.GetVertex(b).Data.Position;
+
+					glm::vec2 dir0 = p1 - p00;
+					glm::vec2 dir1 = p1 - p01;
+
+					float angle0 = 0.0f;
+					{
+						float dot = dir0.x * defaultV.x + dir0.y * defaultV.y;
+						float det = dir0.x * defaultV.y - dir0.y * defaultV.x;
+						angle0 = atan2(det, dot);
+					}
+					float angle1 = 0.0f;
+					{
+						float dot = dir1.x * defaultV.x + dir1.y * defaultV.y;
+						float det = dir1.x * defaultV.y - dir1.y * defaultV.x;
+						angle1 = atan2(det, dot);
+					}
+
+					return angle0 > angle1;
+				});
+			}
+		}
+
+		m_Graph.TraverseRecursive(true, [&](FloorNode& source, FloorNode& destination,size_t parentIndex, size_t childIndex, FloorNode* next, FloorNode* previous, bool end){
 			
 			auto& parent = source;
-			auto& child = destination;
+			auto& child = destination;	
 			
+			std::cout << source.DebugName << " " << parentIndex << "   " << destination.DebugName << " " << childIndex << std::endl;
 			
-			std::cout << source.DebugName << "   " << destination.DebugName << std::endl;
-
 			if (next && previous)
 			{
 				glm::vec3 intersection = ResolveRightLeftIntersection(*next, destination, source.Position, 25.0f, 2.0f, 2.0f);
 				child.LeftSideChildOffset = intersection;
 				intersection = ResolveRightLeftIntersection(destination, *previous, source.Position, 25.0f, 2.0f, 2.0f);
-				child.RightSideChildOffset = intersection;		
-	
-				generateMeshPoints(source, destination, m_IndexOffset, 25.0f, 2.0f);
-				if (end)
-				{
-					generateEndPoints(source, destination, m_IndexOffset, 25.0f, 2.0f);		
-				}
-				m_IndexOffset += 4;
+				child.RightSideChildOffset = intersection;
+
+			
+				if (!end) 
+					generateMeshPointsTest(source, destination, parentIndex, childIndex, 25.0f, 2.0f);
+				else
+					generateEndPointsTest(destination, source, parentIndex, childIndex, 25.0f, 2.0f);
+
+				//if (!(m_Mesh->Vertices.size() % 4))
+				//{		
+				//	m_Mesh->Indices.push_back(m_IndexOffset + 0);
+				//	m_Mesh->Indices.push_back(m_IndexOffset + 1);
+				//	m_Mesh->Indices.push_back(m_IndexOffset + 2);
+				//	m_Mesh->Indices.push_back(m_IndexOffset + 2);
+				//	m_Mesh->Indices.push_back(m_IndexOffset + 3);
+				//	m_Mesh->Indices.push_back(m_IndexOffset + 0);
+				//	m_IndexOffset += 4;
+				//	std::cout << m_IndexOffset << std::endl;
+				//}
 			}
+			source.Traversed = true;
 		});	
+
+
+		
+
+		m_Graph.TraverseRecursive(true, [&](FloorNode& source, FloorNode& destination, size_t parentIndex, size_t childIndex, FloorNode* next, FloorNode* previous, bool end) {
+
+			if (parentIndex > childIndex)
+			{
+				size_t tmp = parentIndex;
+				parentIndex = childIndex;
+				childIndex = tmp;
+			}
+
+			if (!traversed[parentIndex][childIndex])
+			{
+
+				std::cout << parentIndex << " " << childIndex << std::endl;
+				m_Mesh->Vertices.push_back(points[childIndex][parentIndex][0]);
+				m_Mesh->Vertices.push_back(points[childIndex][parentIndex][1]);
+
+
+				m_Mesh->Vertices.push_back(points[parentIndex][childIndex][0]);
+				m_Mesh->Vertices.push_back(points[parentIndex][childIndex][1]);
+
+
+				
+
+				m_Mesh->Indices.push_back(m_IndexOffset + 0);
+				m_Mesh->Indices.push_back(m_IndexOffset + 1);
+				m_Mesh->Indices.push_back(m_IndexOffset + 2);
+				m_Mesh->Indices.push_back(m_IndexOffset + 2);
+				m_Mesh->Indices.push_back(m_IndexOffset + 3);
+				m_Mesh->Indices.push_back(m_IndexOffset + 0);
+				m_IndexOffset += 4;
+
+				traversed[parentIndex][childIndex] = true;
+			}
+		});
+
 	}
 
 
@@ -408,17 +536,8 @@ namespace XYZ {
 
 	void FloorTest::generateMeshPoints(const FloorNode& p1, const FloorNode& p2, uint32_t indexOffset, float height, float thickness)
 	{
-		size_t meshQuadCount = m_Mesh->Vertices.size();
 		auto& begin = p1.Position;
-		auto& end = p2.Position;
-
-		auto topFirstPoint = glm::vec3(begin.x, begin.z + height, begin.y);
-
-		auto endPoint = glm::vec3(end.x, end.z, end.y);
-		auto startPoint = glm::vec3(begin.x, begin.z, begin.y);
-
-		glm::vec3 segmentNormal = NormalFromPoints(topFirstPoint, endPoint, startPoint);
-
+	
 		XYZ::Vertex vertex;
 		vertex.Color = { 1,1,1,1 };
 		vertex.TexCoord = { 0,0 };
@@ -443,17 +562,9 @@ namespace XYZ {
 		m_Mesh->Vertices.push_back(vertex);
 		m_TestLines.push_back({ vertex.Position });
 
-		m_Mesh->Indices.push_back(m_IndexOffset + 0);
-		m_Mesh->Indices.push_back(m_IndexOffset + 1);
-		m_Mesh->Indices.push_back(m_IndexOffset + 2);
-		m_Mesh->Indices.push_back(m_IndexOffset + 2);
-		m_Mesh->Indices.push_back(m_IndexOffset + 3);
-		m_Mesh->Indices.push_back(m_IndexOffset + 0);
-
-
 		m_Lines.push_back({ {1,0,0,1}, p1.Position,p2.Position });	
 	}
-
+	
 	void FloorTest::generateEndPoints(const FloorNode& p1, const FloorNode& p2, uint32_t indexOffset, float height, float thickness)
 	{
 		size_t meshQuadCount = m_Mesh->Vertices.size();
@@ -490,6 +601,84 @@ namespace XYZ {
 		m_Mesh->Vertices.push_back(vertex);
 		m_TestLines.push_back({ vertex.Position });
 		
+
+	}
+
+	void FloorTest::generateMeshPointsTest(const FloorNode& p1, const FloorNode& p2, uint32_t parentIndex, uint32_t childIndex, float height, float thickness)
+	{
+		auto& begin = p1.Position;
+
+		XYZ::Vertex vertex;
+		vertex.Color = { 1,1,1,1 };
+		vertex.TexCoord = { 0,0 };
+
+		
+		vertex.Position = glm::vec4(
+			p2.LeftSideChildOffset.x,
+			p2.LeftSideChildOffset.y,
+			begin.z, 1.0f
+		);
+		vertex.TexCoord = { 1,1 };
+		points[parentIndex][childIndex][0] = vertex;
+		std::cout << parentIndex << " " << childIndex << std::endl;
+		m_TestLines.push_back({ vertex.Position });
+
+		vertex.Position = glm::vec4(
+			p2.RightSideChildOffset.x,
+			p2.RightSideChildOffset.y,
+			begin.z, 1.0f
+		);
+
+		vertex.TexCoord = { 0,1 };
+		points[parentIndex][childIndex][1] = vertex;
+		
+		traversed[parentIndex][childIndex] = false;
+		traversed[childIndex][parentIndex] = false;
+
+
+		m_TestLines.push_back({ vertex.Position });
+
+		m_Lines.push_back({ {1,0,0,1}, p1.Position,p2.Position });
+	}
+
+	void FloorTest::generateEndPointsTest(const FloorNode& p1, const FloorNode& p2, uint32_t parentIndex, uint32_t childIndex, float height, float thickness)
+	{
+		size_t meshQuadCount = m_Mesh->Vertices.size();
+		auto& begin = p1.Position;
+		auto& end = p2.Position;
+
+		auto topFirstPoint = glm::vec3(begin.x, begin.z + height, begin.y);
+
+		auto endPoint = glm::vec3(end.x, end.z, end.y);
+		auto startPoint = glm::vec3(begin.x, begin.z, begin.y);
+
+		glm::vec3 segmentNormal = NormalFromPoints(topFirstPoint, endPoint, startPoint);
+
+		XYZ::Vertex vertex;
+		vertex.Color = { 1,1,1,1 };
+		vertex.TexCoord = { 0,0 };
+
+		vertex.Position = glm::vec4(
+			end.x + segmentNormal.x * thickness / 2.0f,
+			end.y + segmentNormal.z * thickness / 2.0f,
+			end.z, 1.0f
+		);
+		vertex.TexCoord = { 0,0 };	
+		points[parentIndex][childIndex][0] = vertex;
+		m_TestLines.push_back({ vertex.Position });
+
+
+		vertex.Position = glm::vec4(
+			end.x + segmentNormal.x * -thickness / 2.0f,
+			end.y + segmentNormal.z * -thickness / 2.0f,
+			end.z, 1.0f
+		);
+		vertex.TexCoord = { 1,0 };
+		points[parentIndex][childIndex][1] = vertex;
+		traversed[parentIndex][childIndex] = false;
+		traversed[childIndex][parentIndex] = false;
+
+		m_TestLines.push_back({ vertex.Position });
 
 	}
 	

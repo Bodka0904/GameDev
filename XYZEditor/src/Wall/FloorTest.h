@@ -30,10 +30,17 @@ namespace XYZ {
 
 		void generateMeshPoints(const FloorNode& p1, const FloorNode& p2, uint32_t indexOffset, float height, float thickness);
 		void generateEndPoints(const FloorNode& p1, const FloorNode& p2, uint32_t indexOffset, float height, float thickness);
+
+
+		void generateMeshPointsTest(const FloorNode& p1, const FloorNode& p2, uint32_t parentIndex, uint32_t childIndex, float height, float thickness);
+		void generateEndPointsTest(const FloorNode& p1, const FloorNode& p2, uint32_t parentIndex, uint32_t childIndex, float height, float thickness);
 	private:
 		uint32_t m_IndexOffset = 0;
 
 		Graph<FloorNode> m_Graph;
+
+		Vertex points[20][20][2];
+		bool traversed[20][20];
 
 		XYZ::Ref<XYZ::Mesh> m_Mesh;
 		XYZ::Ref<XYZ::Mesh> m_IntersectionMesh;

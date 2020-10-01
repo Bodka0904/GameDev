@@ -79,13 +79,13 @@ namespace XYZ {
 			}
 		}
 		template <typename Func>
-		void TraverseRecursive(const Func& func)
+		void TraverseRecursive(bool enabled, const Func& func)
 		{
 			bool* visited = new bool[m_AdjList.size()];
 			for (size_t i = 0; i < m_AdjList.size(); i++)
 				visited[i] = false;
 
-			traverseRecursive(0, 0, nullptr, nullptr, visited, func);
+			traverseRecursive(0, 0, nullptr, nullptr, visited,enabled, func);
 
 			delete[]visited;
 		}
@@ -130,14 +130,18 @@ namespace XYZ {
 		}
 
 
+
+		std::vector<std::vector<size_t>>& GetAdjList() { return m_AdjList; }
+
+
 	private:
 		template <typename Func>
-		void traverseRecursive(size_t parent, size_t child, T* next, T* previous, bool* visited, const Func& func)
+		void traverseRecursive(size_t parent, size_t child, T* next, T* previous, bool* visited,bool enabled, const Func& func)
 		{
 			visited[parent] = true;
 			if (parent != child)
 			{
-				func(m_Data[parent].Data, m_Data[child].Data, next, previous, m_AdjList[child].empty());
+				func(m_Data[parent].Data, m_Data[child].Data, parent, child, next, previous, m_AdjList[child].empty());
 			}
 			for (size_t i = 0; i < m_AdjList[child].size(); ++i)
 			{
@@ -153,11 +157,11 @@ namespace XYZ {
 
 				if (!visited[m_AdjList[child][i]])
 				{			
-					traverseRecursive(child, m_AdjList[child][i], next, previous, visited, func);
+					traverseRecursive(child, m_AdjList[child][i],  next, previous, visited, enabled, func);
 				}
-				else
+				else if (enabled)
 				{
-					func(m_Data[child].Data, m_Data[m_AdjList[child][i]].Data, next, previous, false);
+					func(m_Data[child].Data, m_Data[m_AdjList[child][i]].Data, child, m_AdjList[child][i], next, previous, m_AdjList[child].size() == 1);
 				}
 			}
 		}

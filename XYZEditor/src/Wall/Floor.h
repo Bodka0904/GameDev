@@ -40,6 +40,9 @@ struct FloorNode
 
 
 	bool Traversed;
+
+	bool Generated = false;
+	size_t Index = 0;
 };
 
 class Floor
