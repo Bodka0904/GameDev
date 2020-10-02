@@ -3,9 +3,9 @@
 #include <glm/glm.hpp>
 
 namespace XYZ {
-/*! @class HashGrid2D
-*	@brief 2D HashGrid for storing elements
-*/
+	/*! @class HashGrid2D
+	*	@brief 2D HashGrid for storing elements
+	*/
 	template<typename T>
 	class HashGrid2D
 	{
@@ -15,7 +15,7 @@ namespace XYZ {
 		{
 			m_Table.resize(m_TableSize);
 		}
-		
+
 		/** Inserts an element size_to the hashgrid */
 		void Insert(const T& element, const glm::vec2& pos, const glm::vec2& size)
 		{
@@ -58,7 +58,7 @@ namespace XYZ {
 			}
 			return removed;
 		}
-		
+
 		/** Returns the element count */
 		size_t GetElements(T** buffer, const glm::vec2& pos, const glm::vec2& size)
 		{

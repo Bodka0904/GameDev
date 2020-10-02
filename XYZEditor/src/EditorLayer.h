@@ -8,7 +8,6 @@
 #include "Tools/EditorCamera.h"
 
 
-#include "Wall/Floor.h"
 #include "Wall/FloorTest.h"
 
 
@@ -34,6 +33,7 @@ namespace XYZ {
 	private:
 		bool onWindowResized(WindowResizeEvent& event);
 		bool onMouseButtonPress(MouseButtonPressEvent& event);
+		bool onMouseButtonRelease(MouseButtonReleaseEvent& event);
 		bool onKeyPress(KeyPressedEvent& event);
 		bool onKeyRelease(KeyReleasedEvent& event);
 	private:
@@ -47,7 +47,6 @@ namespace XYZ {
 		Ref<FrameBuffer> m_FBO;
 		AssetManager m_AssetManager;
 
-		Floor m_Floor;
 		FloorTest m_FloorTest;
 
 		int m_WallOne;
@@ -60,5 +59,8 @@ namespace XYZ {
 		Ref<Texture2D> m_CharacterTexture;
 
 		Ref<SubTexture2D> m_CharacterSubTexture;
+
+		size_t m_EditedPoint = 0;
+		bool m_EditingPoint = false;
 	};
 }

@@ -27,7 +27,7 @@ namespace XYZ {
 	};
 
 	// class to represent a graph object
-	template <typename T>
+	template <typename T, bool DoubleSidedConnection>
 	class Graph
 	{
 	public:
@@ -50,9 +50,30 @@ namespace XYZ {
 				m_AdjList.resize(edge.Destination);
 
 			m_AdjList[edge.Source].push_back(edge.Destination);
-			m_AdjList[edge.Destination].push_back(edge.Source);
+			
+			if (DoubleSidedConnection)
+				m_AdjList[edge.Destination].push_back(edge.Source);
 		}
 
+		void RemoveEdge(const Edge& edge)
+		{
+			XYZ_ASSERT(edge.Source < m_AdjList.size(), "Edge source out of range");
+			XYZ_ASSERT(edge.Destination < m_AdjList[edge.Source].size(), "Edge destination out of range");
+			//m_AdjList.erase(m_AdjList[edge.Source][edge.Destination]);
+
+			if (DoubleSidedConnection)
+			{
+				XYZ_ASSERT(edge.Destination < m_AdjList.size(), "Edge source out of range");
+				XYZ_ASSERT(edge.Source < m_AdjList[edge.Destination].size(), "Edge destination out of range");
+				//m_AdjList.erase(m_AdjList[edge.Destination][edge.Source]);
+			}
+		}
+
+		void RemoveData(size_t index)
+		{
+			//m_Data.erase(index);
+			//m_AdjList.erase(index);
+		}
 
 		template <typename Func>
 		void Traverse(const Func& func)
@@ -133,7 +154,7 @@ namespace XYZ {
 
 		std::vector<std::vector<size_t>>& GetAdjList() { return m_AdjList; }
 
-
+		std::vector<GraphVertex<T>>& GetData() { return m_Data; }
 	private:
 		template <typename Func>
 		void traverseRecursive(size_t parent, size_t child, T* next, T* previous, bool* visited,bool enabled, const Func& func)

@@ -22,9 +22,6 @@
     <ClInclude Include="src\Tools\EditorCamera.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\Wall\Floor.h">
-      <Filter>Wall</Filter>
-    </ClInclude>
     <ClInclude Include="src\Wall\FloorTest.h">
       <Filter>Wall</Filter>
     </ClInclude>
@@ -42,9 +39,6 @@
     </ClCompile>
     <ClCompile Include="src\Tools\EditorCamera.cpp">
       <Filter>Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Wall\Floor.cpp">
-      <Filter>Wall</Filter>
     </ClCompile>
     <ClCompile Include="src\Wall\FloorTest.cpp">
       <Filter>Wall</Filter>

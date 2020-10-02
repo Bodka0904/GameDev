@@ -82,106 +82,54 @@ namespace XYZ {
 		InGui::End();
 		InGui::SetWindowFlags("test", (MenuEnabled | Visible | EventListener));
 
-
-		{	
+		{
 			//size_t pointOne = m_FloorTest.CreatePoint({ 0,0,0 }, "Point One");
 			//size_t pointTwo = m_FloorTest.CreatePoint({ 0,10,0 }, "Point Two");
 			//size_t pointThree = m_FloorTest.CreatePoint({ -10,10,0 }, "Point Three");
 			//size_t pointFour = m_FloorTest.CreatePoint({ -10,0,0 }, "Point Four");
 			//size_t pointFive = m_FloorTest.CreatePoint({ 15,15,0 }, "Point Five");
 			//
-			//m_FloorTest.Connect(pointOne, pointTwo);
-			//m_FloorTest.Connect(pointTwo, pointThree);
-			//m_FloorTest.Connect(pointOne, pointThree);
-			//m_FloorTest.Connect(pointThree, pointFour);
-			//m_FloorTest.Connect(pointOne, pointFour);
+			//m_FloorTest.Connect(pointOne, pointTwo);	
+			//m_FloorTest.Connect(pointTwo, pointThree);		
+			//m_FloorTest.Connect(pointTwo, pointFive);
+			//m_FloorTest.Connect(pointThree, pointOne);
+			//m_FloorTest.Connect(pointFour, pointOne);
+			//
+			//m_FloorTest.Connect(pointFour, pointThree);
+			//m_FloorTest.Connect(pointFour, pointTwo);
+			//m_FloorTest.Connect(pointOne, pointFive);
+
+			size_t parentPoint = m_FloorTest.CreatePoint({ 0,-2,0 }, "Parent");
+			size_t fifthPoint = m_FloorTest.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
+			size_t fourthPoint = m_FloorTest.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
+			size_t thirdPoint = m_FloorTest.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
+			size_t secondPoint = m_FloorTest.CreatePointFromPoint({ -8,7,0 },parentPoint, "Second Point");
+			size_t firstPoint = m_FloorTest.CreatePointFromPoint({ -5,-25,0 },parentPoint, "First Point");
 			
 			
-
-
-
-			//size_t parentPoint = m_FloorTest.CreatePoint({ 0,-2,0 }, "Parent");
-			//size_t fifthPoint = m_FloorTest.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
-			//size_t fourthPoint = m_FloorTest.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
-			//size_t thirdPoint = m_FloorTest.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
-			//size_t secondPoint = m_FloorTest.CreatePointFromPoint({ -8,7,0 },parentPoint, "Second Point");
-			//size_t firstPoint = m_FloorTest.CreatePointFromPoint({ -5,-25,0 }, parentPoint, "First Point");
-			//
-			//
-			//size_t sixthPoint = m_FloorTest.CreatePoint({ -4,12,0 }, "Sixth Point");
-			//size_t seventhPoint = m_FloorTest.CreatePoint({ -15,9,0 }, "Seventh Point");
-			//size_t eighthPoint = m_FloorTest.CreatePoint({ -15,-3, 0 }, "Eighth Point");
-			//size_t ninthPoint = m_FloorTest.CreatePoint({ -7,-3, 0 }, "Ninth Point");
-			//size_t tenthPoint = m_FloorTest.CreatePoint({ -15,-10, 0 }, "Tenth Point");
-			//
-			//
-			////m_FloorTest.Connect(secondPoint, parentPoint);
-			//m_FloorTest.Connect(secondPoint, sixthPoint);
-			//m_FloorTest.Connect(secondPoint, seventhPoint);
-			//m_FloorTest.Connect(secondPoint, eighthPoint);
-			//m_FloorTest.Connect(secondPoint, ninthPoint);
-			//
-			//
-			//m_FloorTest.Connect(ninthPoint, tenthPoint);
-			////m_FloorTest.Connect(ninthPoint, secondPoint);
-			//size_t test = m_FloorTest.CreatePointFromPoint({ -30,0,0 }, eighthPoint, "Test Point");
-			//m_FloorTest.Connect(eighthPoint, tenthPoint);
-			//m_FloorTest.Connect(tenthPoint, firstPoint);
-			////m_FloorTest.Connect(firstPoint, eleventhPoint);
-			//
-			//
-			//m_FloorTest.GenerateMesh();
-		}
-
-
-
-
-		{
-			size_t pointOne = m_FloorTest.CreatePoint({ 0,0,0 }, "Point One");
-			size_t pointTwo = m_FloorTest.CreatePoint({ 0,10,0 }, "Point Two");
-			size_t pointThree = m_FloorTest.CreatePoint({ -10,10,0 }, "Point Three");
-			size_t pointFour = m_FloorTest.CreatePoint({ -10,0,0 }, "Point Four");
-			size_t pointFive = m_FloorTest.CreatePoint({ 15,15,0 }, "Point Five");
+			size_t sixthPoint = m_FloorTest.CreatePoint({ -4,12,0 }, "Sixth Point");
+			size_t seventhPoint = m_FloorTest.CreatePoint({ -15,9,0 }, "Seventh Point");
+			size_t eighthPoint = m_FloorTest.CreatePoint({ -15,-3, 0 }, "Eighth Point");
+			size_t ninthPoint = m_FloorTest.CreatePoint({ -7,-3, 0 }, "Ninth Point");
+			size_t tenthPoint = m_FloorTest.CreatePoint({ 20,-30, 0 }, "Tenth Point");
+			size_t eleventhPoint = m_FloorTest.CreatePoint({ -15,-10, 0 }, "Eleventh Point");
+			size_t twelvethPoint = m_FloorTest.CreatePoint({ -30,-10,0 }, "Twelveth Point");
 			
-			m_FloorTest.Connect(pointOne, pointTwo);	
-			m_FloorTest.Connect(pointTwo, pointThree);		
-			m_FloorTest.Connect(pointTwo, pointFive);
-			m_FloorTest.Connect(pointThree, pointOne);
-			m_FloorTest.Connect(pointFour, pointOne);
+			//m_FloorTest.Connect(secondPoint, parentPoint);
+			m_FloorTest.Connect(secondPoint, sixthPoint);
+			m_FloorTest.Connect(secondPoint, seventhPoint);
+			m_FloorTest.Connect(secondPoint, eighthPoint);
+			m_FloorTest.Connect(secondPoint, ninthPoint);
+			
+			//m_FloorTest.Connect(ninthPoint, secondPoint);
+			m_FloorTest.Connect(ninthPoint ,twelvethPoint);
+			m_FloorTest.Connect(ninthPoint, eleventhPoint);
+			m_FloorTest.Connect(ninthPoint, firstPoint);
+			m_FloorTest.Connect(eleventhPoint, twelvethPoint);
+			m_FloorTest.Connect(twelvethPoint, firstPoint);
+			m_FloorTest.Connect(eleventhPoint, firstPoint);
 
-			m_FloorTest.Connect(pointFour, pointThree);
-			m_FloorTest.Connect(pointFour, pointTwo);
-			m_FloorTest.Connect(pointOne, pointFive);
-
-			//size_t parentPoint = m_FloorTest.CreatePoint({ 0,-2,0 }, "Parent");
-			//size_t fifthPoint = m_FloorTest.CreatePointFromPoint({ 20,10,0 }, parentPoint, "Fifth Point");
-			//size_t fourthPoint = m_FloorTest.CreatePointFromPoint({ 10,10,0 }, parentPoint, "Fourth Point");
-			//size_t thirdPoint = m_FloorTest.CreatePointFromPoint({ 0,10,0 }, parentPoint, "Third Point");
-			//size_t secondPoint = m_FloorTest.CreatePointFromPoint({ -8,7,0 },parentPoint, "Second Point");
-			//size_t firstPoint = m_FloorTest.CreatePointFromPoint({ -5,-25,0 },parentPoint, "First Point");
-			//
-			//
-			//size_t sixthPoint = m_FloorTest.CreatePoint({ -4,12,0 }, "Sixth Point");
-			//size_t seventhPoint = m_FloorTest.CreatePoint({ -15,9,0 }, "Seventh Point");
-			//size_t eighthPoint = m_FloorTest.CreatePoint({ -15,-3, 0 }, "Eighth Point");
-			//size_t ninthPoint = m_FloorTest.CreatePoint({ -7,-3, 0 }, "Ninth Point");
-			//size_t tenthPoint = m_FloorTest.CreatePoint({ 20,-30, 0 }, "Tenth Point");
-			//size_t eleventhPoint = m_FloorTest.CreatePoint({ -15,-10, 0 }, "Eleventh Point");
-			//size_t twelvethPoint = m_FloorTest.CreatePoint({ -30,-10,0 }, "Twelveth Point");
-			//
-			////m_FloorTest.Connect(secondPoint, parentPoint);
-			//m_FloorTest.Connect(secondPoint, sixthPoint);
-			//m_FloorTest.Connect(secondPoint, seventhPoint);
-			//m_FloorTest.Connect(secondPoint, eighthPoint);
-			//m_FloorTest.Connect(secondPoint, ninthPoint);
-			//
-			////m_FloorTest.Connect(ninthPoint, secondPoint);
-			//m_FloorTest.Connect(ninthPoint ,twelvethPoint);
-			//m_FloorTest.Connect(ninthPoint, eleventhPoint);
-			//m_FloorTest.Connect(ninthPoint, firstPoint);
-			//m_FloorTest.Connect(firstPoint, ninthPoint);
-		
-			m_FloorTest.GenerateMeshTest();
+			m_FloorTest.GenerateMesh();
 		}
 	}
 
@@ -210,9 +158,27 @@ namespace XYZ {
 		MeshRenderer::BeginScene({ m_EditorCamera.GetViewProjectionMatrix() });
 		MeshRenderer::SetMaterial(m_Material);
 		
-		//m_Floor.SubmitToRenderer();
-		m_FloorTest.SubmitToRenderer();
 
+		if (m_EditingPoint)
+		{
+			auto [mx, my] = Input::GetMousePosition();
+			auto [width, height] = Input::GetWindowSize();
+			auto pos = m_EditorCamera.GetPosition();
+			float cameraWidth = m_EditorCamera.GetAspectRatio() * m_EditorCamera.GetZoomLevel() * 2;
+			glm::vec2 mousePos = { mx,my };
+			
+			mousePos.x = (mousePos.x / width) * cameraWidth - cameraWidth * 0.5f;
+			mousePos.y = cameraWidth * 0.5f - (mousePos.y / height) * cameraWidth;
+			
+			mousePos.x += pos.x;
+			mousePos.y += pos.y;
+
+			m_FloorTest.SetPointPosition({ mousePos.x,mousePos.y,0.0f }, m_EditedPoint);
+		}
+
+		m_FloorTest.GenerateMesh();
+		m_FloorTest.SubmitToRenderer();
+		
 
 		MeshRenderer::Flush();
 		MeshRenderer::EndScene();
@@ -222,6 +188,10 @@ namespace XYZ {
 
 		m_FBO->Unbind();
 		
+
+		
+
+
 
 		//if (m_ActiveWindow)
 		{
@@ -234,6 +204,7 @@ namespace XYZ {
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowResizeEvent>(Hook(&EditorLayer::onWindowResized, this));
 		dispatcher.Dispatch<MouseButtonPressEvent>(Hook(&EditorLayer::onMouseButtonPress, this));
+		dispatcher.Dispatch<MouseButtonReleaseEvent>(Hook(&EditorLayer::onMouseButtonRelease, this));
 		dispatcher.Dispatch<KeyPressedEvent>(Hook(&EditorLayer::onKeyPress, this));
 		dispatcher.Dispatch<KeyReleasedEvent>(Hook(&EditorLayer::onKeyRelease, this));
 		m_EditorCamera.OnEvent(event);
@@ -333,6 +304,34 @@ namespace XYZ {
 		{
 			glm::vec2 relativeMousePos = GetWorldPositionFromInGui(InGui::GetWindow("scene"), m_EditorCamera);
 			m_SceneHierarchyPanel.SelectEntity(relativeMousePos);
+		}
+
+		auto [mx, my] = Input::GetMousePosition();
+		auto [width, height] = Input::GetWindowSize();
+		auto pos = m_EditorCamera.GetPosition();
+		float cameraWidth = m_EditorCamera.GetAspectRatio() * m_EditorCamera.GetZoomLevel() * 2;
+		glm::vec2 mousePos = { mx,my };
+
+		mousePos.x = (mousePos.x / width) * cameraWidth - cameraWidth * 0.5f;
+		mousePos.y = cameraWidth * 0.5f - (mousePos.y / height) * cameraWidth;
+
+		mousePos.x += pos.x;
+		mousePos.y += pos.y;
+
+		size_t point = 0;
+		if (m_FloorTest.GetPoint(mousePos, point))
+		{
+			m_EditedPoint = m_FloorTest.CreatePointFromPoint({ mousePos,0.0f }, point, "New point");
+			m_EditingPoint = true;
+		}
+		return false;
+	}
+	bool EditorLayer::onMouseButtonRelease(MouseButtonReleaseEvent& event)
+	{
+		if (event.IsButtonReleased(MouseCode::XYZ_MOUSE_BUTTON_LEFT))
+		{
+			m_EditingPoint = false;
+			m_EditedPoint = 0;
 		}
 		return false;
 	}
