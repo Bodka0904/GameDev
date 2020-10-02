@@ -70,6 +70,14 @@ namespace XYZ {
 			}
 		}
 
+		void Resize(int size)
+		{
+			for (int i = m_Data.size(); i < size; ++i)
+			{
+				Insert(T());
+			}
+		}
+
 		// Erases the nth element
 		void Erase(int index)
 		{

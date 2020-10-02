@@ -1,5 +1,5 @@
 #pragma once
-
+#include "FreeList.h"
 
 
 namespace XYZ {
@@ -33,13 +33,14 @@ namespace XYZ {
 	public:
 		size_t AddVertex(const T& data)
 		{
-			GraphVertex<T> vertex(data, m_Data.size());
-			m_Data.push_back(vertex);
+			GraphVertex<T> vertex(data, 0);
+			int index = m_Data.Insert(vertex);
+			vertex.Index = index;
 
-			if (m_Data.size() >= m_AdjList.size())
-				m_AdjList.resize(m_Data.size());
+			if (m_Data.Range() >= m_AdjList.size())
+				m_AdjList.resize(m_Data.Range());
 
-			return vertex.Index;
+			return index;
 		}
 
 		void AddEdge(const Edge& edge)
@@ -56,23 +57,37 @@ namespace XYZ {
 		}
 
 		void RemoveEdge(const Edge& edge)
-		{
-			XYZ_ASSERT(edge.Source < m_AdjList.size(), "Edge source out of range");
-			XYZ_ASSERT(edge.Destination < m_AdjList[edge.Source].size(), "Edge destination out of range");
-			//m_AdjList.erase(m_AdjList[edge.Source][edge.Destination]);
+		{		
+			{
+				auto it = std::find(m_AdjList[edge.Source].begin(), m_AdjList[edge.Source].end(), edge.Destination);
+				if (it != m_AdjList[edge.Source].end())
+					m_AdjList[edge.Source].erase(it);
 
+				std::cout << edge.Destination << std::endl;
+			}
 			if (DoubleSidedConnection)
 			{
-				XYZ_ASSERT(edge.Destination < m_AdjList.size(), "Edge source out of range");
-				XYZ_ASSERT(edge.Source < m_AdjList[edge.Destination].size(), "Edge destination out of range");
-				//m_AdjList.erase(m_AdjList[edge.Destination][edge.Source]);
+			
+				auto it = std::find(m_AdjList[edge.Destination].begin(), m_AdjList[edge.Destination].end(), edge.Source);
+				if (it != m_AdjList[edge.Destination].end())
+					m_AdjList[edge.Destination].erase(it);
 			}
 		}
 
 		void RemoveData(size_t index)
-		{
-			//m_Data.erase(index);
-			//m_AdjList.erase(index);
+		{	
+			if (DoubleSidedConnection)
+			{
+				for (auto it : m_AdjList[index])
+				{
+					auto del = std::find(m_AdjList[it].begin(), m_AdjList[it].end(), index);
+					if (del != m_AdjList[it].end())
+						m_AdjList[it].erase(del);
+				}
+			}
+			m_AdjList[index].clear();
+
+			m_Data.Erase(index);
 		}
 
 		template <typename Func>
@@ -92,7 +107,6 @@ namespace XYZ {
 					if (i > 0)
 						previous = &m_Data[adj[i - 1]].Data;
 					
-
 					func(m_Data[counter].Data, m_Data[adj[i]].Data, next, previous);
 				}
 				
@@ -100,23 +114,42 @@ namespace XYZ {
 			}
 		}
 		template <typename Func>
-		void TraverseRecursive(bool enabled, const Func& func)
+		void TraverseRecursive(const Func& func)
 		{
-			bool* visited = new bool[m_AdjList.size()];
-			for (size_t i = 0; i < m_AdjList.size(); i++)
-				visited[i] = false;
+			if (m_Visited.size() != m_AdjList.size())
+				m_Visited.resize(m_AdjList.size());
 
-			traverseRecursive(0, 0, nullptr, nullptr, visited,enabled, func);
+			for (auto it : m_Visited)
+				it = false;
 
-			delete[]visited;
+			for (size_t i = 0; i < m_AdjList.size(); ++i)
+			{
+				if (!m_Visited[i])
+					traverseRecursive(i, i, nullptr, nullptr, func);
+			}
 		}
+
+		
 	
 		template <typename Func>
 		void TraverseChildren(size_t parent, const Func& func)
 		{	
+			uint32_t counter = 0;
+			auto& adj = m_AdjList[parent];
 			for (auto& vertex : m_AdjList[parent])
 			{
-				func(m_Data[parent], m_Data[vertex]);
+				T* next = nullptr;
+				T* previous = nullptr;
+				if (counter < adj.size() - 1)
+					next = &m_Data[adj[counter + 1]].Data;
+				else if (counter != 0)
+					next = &m_Data[adj[0]].Data;
+				if (counter > 0)
+					previous = &m_Data[adj[counter - 1]].Data;
+
+				func(m_Data[parent].Data, m_Data[vertex].Data, parent, vertex, next, previous, adj.size() == 1);
+				
+				counter++;
 			}
 		}
 
@@ -150,20 +183,18 @@ namespace XYZ {
 			return m_Data[index];
 		}
 
-
-
 		std::vector<std::vector<size_t>>& GetAdjList() { return m_AdjList; }
 
-		std::vector<GraphVertex<T>>& GetData() { return m_Data; }
+		FreeList<GraphVertex<T>>& GetData() { return m_Data; }
 	private:
 		template <typename Func>
-		void traverseRecursive(size_t parent, size_t child, T* next, T* previous, bool* visited,bool enabled, const Func& func)
+		void traverseRecursive(size_t parent, size_t child, T* next, T* previous ,const Func& func)
 		{
-			visited[parent] = true;
+			m_Visited[parent] = true;		
 			if (parent != child)
 			{
-				func(m_Data[parent].Data, m_Data[child].Data, parent, child, next, previous, m_AdjList[child].empty());
-			}
+				func(m_Data[parent].Data, m_Data[child].Data, parent, child, next, previous, m_AdjList[child].empty());			
+			}	
 			for (size_t i = 0; i < m_AdjList[child].size(); ++i)
 			{
 				if (m_AdjList[child].size() - 1 > i)
@@ -176,25 +207,25 @@ namespace XYZ {
 					previous = &m_Data[m_AdjList[child][m_AdjList[child].size() - 1]].Data;
 
 
-				if (!visited[m_AdjList[child][i]])
-				{			
-					traverseRecursive(child, m_AdjList[child][i],  next, previous, visited, enabled, func);
+				if (!m_Visited[m_AdjList[child][i]])
+				{
+					traverseRecursive(child, m_AdjList[child][i], next, previous, func);
 				}
-				else if (enabled)
+				else
 				{
 					func(m_Data[child].Data, m_Data[m_AdjList[child][i]].Data, child, m_AdjList[child][i], next, previous, m_AdjList[child].size() == 1);
 				}
-			}
+			}		
 		}
-
+	
 
 	private:
 
 		// construct a vector of vectors to represent an adjacency list
 		std::vector<std::vector<size_t>> m_AdjList;
+		std::vector<bool> m_Visited;
 
-
-		std::vector<GraphVertex<T>> m_Data;
+		FreeList<GraphVertex<T>> m_Data;
 	};
 
 	

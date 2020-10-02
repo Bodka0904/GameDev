@@ -116,13 +116,19 @@ namespace XYZ{
 	size_t FloorTest::CreatePoint(const glm::vec3& point, const std::string& name)
 	{
 		size_t index = m_Graph.AddVertex(FloorNode{ name,point });
+		m_RenderData.resize(m_Graph.GetData().Range() * m_Graph.GetData().Range());
 		return index;
 	}
 	size_t FloorTest::CreatePointFromPoint(const glm::vec3& point, size_t parent, const std::string& name)
 	{	
 		size_t index = m_Graph.AddVertex(FloorNode{ name,point });
 		m_Graph.AddEdge({ parent,index });
+		m_RenderData.resize(m_Graph.GetData().Range() * m_Graph.GetData().Range());
 		return index;
+	}
+	void FloorTest::DestroyPoint(size_t index)
+	{
+		m_Graph.RemoveData(index);
 	}
 	void FloorTest::SetPointPosition(const glm::vec3& position, size_t index)
 	{
@@ -141,8 +147,9 @@ namespace XYZ{
 	bool FloorTest::GetPoint(const glm::vec2& position, size_t& point)
 	{		
 		size_t counter = 0;
-		for (auto& vertex : m_Graph.GetData())
+		for (int i = 0; i < m_Graph.GetData().Range(); ++i)
 		{
+			auto& vertex = m_Graph.GetData()[i];
 			if (Collide(vertex.Data.Position, position))
 			{
 				point = counter;
@@ -159,6 +166,7 @@ namespace XYZ{
 		m_IntersectionMesh->TextureID = 1;	
 		m_Mesh->Vertices.clear();
 		m_Mesh->Indices.clear();
+	
 		m_Lines.clear();
 		m_IndexOffset = 0;
 
@@ -197,14 +205,12 @@ namespace XYZ{
 			}
 		}
 
-		m_RenderData.clear();
-		m_RenderData.resize(m_Graph.GetData().size() * m_Graph.GetData().size());
-		m_Graph.TraverseRecursive(true, [&](FloorNode& source, FloorNode& destination,size_t parentIndex, size_t childIndex, FloorNode* next, FloorNode* previous, bool end){
+		
+		m_Graph.TraverseRecursive([&](FloorNode& source, FloorNode& destination,size_t parentIndex, size_t childIndex, FloorNode* next, FloorNode* previous, bool end){
 			
 			auto& parent = source;
 			auto& child = destination;	
 			
-		
 			m_Lines.push_back({ {1,0,0,1}, source.Position });
 			m_Lines.push_back({ {1,0,0,1}, destination.Position });
 
@@ -218,10 +224,14 @@ namespace XYZ{
 				else
 					generateEndPoints(destination, source, parentIndex, childIndex, 25.0f, 2.0f);
 			}
+			else
+			{
+				generateEndPoints(destination, source, parentIndex, childIndex, 25.0f, 2.0f);
+			}
 		});	
 
 
-		m_Graph.TraverseRecursive(true, [&](FloorNode& source, FloorNode& destination, size_t parentIndex, size_t childIndex, FloorNode* next, FloorNode* previous, bool end) {
+		m_Graph.TraverseRecursive([&](FloorNode& source, FloorNode& destination, size_t parentIndex, size_t childIndex, FloorNode* next, FloorNode* previous, bool end) {
 
 			if (parentIndex > childIndex)
 			{
@@ -230,15 +240,13 @@ namespace XYZ{
 				childIndex = tmp;
 			}
 
-			auto& current = m_RenderData[m_Graph.GetData().size() * parentIndex + childIndex];
+			auto& current = m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex];
 			if (!current.Traversed)
 			{
-				auto& swapped = m_RenderData[m_Graph.GetData().size() * childIndex + parentIndex];
+				auto& swapped = m_RenderData[m_Graph.GetData().Range() * childIndex + parentIndex];
 				m_Mesh->Vertices.push_back(swapped.Points[0]);
 				m_Mesh->Vertices.push_back(swapped.Points[1]);
-
-
-				
+	
 				m_Mesh->Vertices.push_back(current.Points[0]);
 				m_Mesh->Vertices.push_back(current.Points[1]);
 
@@ -255,6 +263,7 @@ namespace XYZ{
 		});
 	}
 
+
 	void FloorTest::generatePoints(const glm::vec3& leftIntersection, const glm::vec3& rightIntersection, size_t parentIndex, size_t childIndex)
 	{
 		XYZ::Vertex vertex;
@@ -269,8 +278,8 @@ namespace XYZ{
 			1.0f
 		);
 		vertex.TexCoord = { 1,1 };
-		m_RenderData[m_Graph.GetData().size() * parentIndex + childIndex].Points[0] = vertex;
-		m_RenderData[m_Graph.GetData().size() * parentIndex + childIndex].Traversed = false;
+		m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex].Points[0] = vertex;
+		m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex].Traversed = false;
 
 
 		m_Lines.push_back({ {1,1,1,1}, vertex.Position });
@@ -281,8 +290,8 @@ namespace XYZ{
 			1.0f
 		);
 		vertex.TexCoord = { 0,1 };
-		m_RenderData[m_Graph.GetData().size() * parentIndex + childIndex].Points[1] = vertex;
-		m_RenderData[m_Graph.GetData().size() * parentIndex + childIndex].Traversed = false;
+		m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex].Points[1] = vertex;
+		m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex].Traversed = false;
 
 
 		m_Lines.push_back({ {1,1,1,1}, vertex.Position });
@@ -310,8 +319,8 @@ namespace XYZ{
 			end.z, 1.0f
 		);
 		vertex.TexCoord = { 0,0 };	
-		m_RenderData[m_Graph.GetData().size() * parentIndex + childIndex].Points[0] = vertex;
-		m_RenderData[m_Graph.GetData().size() * parentIndex + childIndex].Traversed = false;
+		m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex].Points[0] = vertex;
+		m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex].Traversed = false;
 
 		m_Lines.push_back({ {1,1,1,1}, vertex.Position });
 
@@ -322,8 +331,8 @@ namespace XYZ{
 			end.z, 1.0f
 		);
 		vertex.TexCoord = { 1,0 };
-		m_RenderData[m_Graph.GetData().size() * parentIndex + childIndex].Points[1] = vertex;
-		m_RenderData[m_Graph.GetData().size() * parentIndex + childIndex].Traversed = false;
+		m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex].Points[1] = vertex;
+		m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex].Traversed = false;
 
 	
 

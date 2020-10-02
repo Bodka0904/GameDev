@@ -61,6 +61,7 @@ namespace XYZ {
 		Ref<SubTexture2D> m_CharacterSubTexture;
 
 		size_t m_EditedPoint = 0;
+		size_t m_StartPoint = 0;
 		bool m_EditingPoint = false;
 	};
 }

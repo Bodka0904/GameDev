@@ -41,6 +41,8 @@ namespace XYZ {
 		size_t CreatePoint(const glm::vec3& point, const std::string& name);
 		size_t CreatePointFromPoint(const glm::vec3& point, size_t parent, const std::string& name);
 
+		void DestroyPoint(size_t index);
+
 		void SetPointPosition(const glm::vec3& position, size_t index);
 
 		void Connect(size_t parent, size_t child);
