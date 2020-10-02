@@ -220,7 +220,6 @@ namespace XYZ {
 	
 
 	private:
-
 		// construct a vector of vectors to represent an adjacency list
 		std::vector<std::vector<size_t>> m_AdjList;
 		std::vector<bool> m_Visited;

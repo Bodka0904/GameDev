@@ -60,8 +60,9 @@ namespace XYZ {
 
 		Ref<SubTexture2D> m_CharacterSubTexture;
 
-		size_t m_EditedPoint = 0;
-		size_t m_StartPoint = 0;
+		static constexpr size_t sc_InvalidPoint = 1000000;
+		size_t m_EditedPoint = sc_InvalidPoint;
+		size_t m_StartPoint = sc_InvalidPoint;
 		bool m_EditingPoint = false;
 	};
 }
