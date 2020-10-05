@@ -174,7 +174,7 @@ namespace XYZ {
 		{
 			s_Data.BufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 			s_Data.BufferPtr->Color = color;
-			s_Data.BufferPtr->TexCoord = glm::vec2(0);
+			s_Data.BufferPtr->TexCoord = glm::vec2(1);
 			s_Data.BufferPtr->TextureID = 0.0f;
 			s_Data.BufferPtr++;
 		}

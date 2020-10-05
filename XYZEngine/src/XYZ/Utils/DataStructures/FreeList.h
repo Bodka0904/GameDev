@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <utility>
 
+/* Copied from
+https://stackoverflow.com/questions/41946007/efficient-and-well-explained-implementation-of-a-quadtree-for-2d-collision-det
+*/
 
 namespace XYZ {
 
@@ -40,14 +43,13 @@ namespace XYZ {
 			if (m_FirstFree != -1)
 			{
 				int index = m_FirstFree;
-				m_FirstFree = m_Data[m_FirstFree].second.Next;
-				m_Data[index].first = true;
-				m_Data[index].second.Element = elem;
+				m_FirstFree = m_Data[m_FirstFree].Next;
+				m_Data[index].Element = elem;
 				return index;
 			}
 			else
 			{
-				m_Data.push_back({ true,elem });
+				m_Data.push_back(elem);
 				return static_cast<int>(m_Data.size() - 1);
 			}
 		}
@@ -58,31 +60,21 @@ namespace XYZ {
 			if (m_FirstFree != -1)
 			{
 				int index = m_FirstFree;
-				m_FirstFree = m_Data[m_FirstFree].second.Next;
-				m_Data[index].first = true;
-				m_Data[index].second.Element = T(std::forward<Args>(args)...);
+				m_FirstFree = m_Data[m_FirstFree].Next;
+				m_Data[index].Element = T(std::forward<Args>(args)...);
 				return index;
 			}
 			else
 			{
-				m_Data.emplace_back(true, T(std::forward<Args>(args)...));
+				m_Data.emplace_back(T(std::forward<Args>(args)...));
 				return static_cast<int>(m_Data.size() - 1);
-			}
-		}
-
-		void Resize(int size)
-		{
-			for (int i = m_Data.size(); i < size; ++i)
-			{
-				Insert(T());
 			}
 		}
 
 		// Erases the nth element
 		void Erase(int index)
 		{
-			m_Data[index].first = false;
-			m_Data[index].second.Next = m_FirstFree;
+			m_Data[index].Next = m_FirstFree;
 			m_FirstFree = index;
 		}
 
@@ -95,6 +87,18 @@ namespace XYZ {
 			m_Data.resize(static_cast<size_t>(size));
 		}
 
+		void Resize(int size)
+		{
+			int index = m_Data.size();
+			for (int i = index; i < size; ++i)
+			{
+				Insert(T());
+			}
+			for (int i = index; i < size; ++i)
+			{
+				Erase(i);
+			}
+		}
 		// Removes all elements from the free list.
 		void Clear()
 		{
@@ -108,21 +112,16 @@ namespace XYZ {
 			return static_cast<int>(m_Data.size());
 		}
 
-		bool IsValidIndex(int index) const
-		{
-			return (index < m_Data.size() && m_Data[index].first);
-		}
-
 		// Returns the nth element.
 		T& operator[](int index)
 		{
-			return m_Data[index].second.Element;
+			return m_Data[index].Element;
 		}
 
 		// Returns the nth element.
 		const T& operator[](int index) const
 		{
-			return m_Data[index].second.Element;
+			return m_Data[index].Element;
 		}
 
 	private:
@@ -155,7 +154,8 @@ namespace XYZ {
 			int Next;
 		};
 
-		std::vector<std::pair<bool, FreeElement>> m_Data;
+
+		std::vector<FreeElement> m_Data;
 		int m_FirstFree;
 	};
 }

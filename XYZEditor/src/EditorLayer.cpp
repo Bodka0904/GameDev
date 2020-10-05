@@ -131,13 +131,12 @@ namespace XYZ {
 		
 		MeshRenderer::Flush();
 		MeshRenderer::EndScene();
+		
 		Renderer2D::Flush();
 		Renderer2D::FlushLines();
 		Renderer2D::EndScene();
 
 		m_FBO->Unbind();
-		
-
 		
 
 		//if (m_ActiveWindow)
@@ -269,7 +268,11 @@ namespace XYZ {
 			if (m_FloorTest.GetPoint(mousePos, point))
 			{
 				m_StartPoint = point;
+				std::cout << m_StartPoint << std::endl;
 				m_EditedPoint = m_FloorTest.CreatePointFromPoint({ mousePos,0.0f }, point, "Edited Point");
+
+				std::cout << m_EditedPoint << std::endl;
+				std::cout << "-------------------" << std::endl;
 				m_EditingPoint = true;
 			}
 			else
@@ -318,7 +321,7 @@ namespace XYZ {
 		// You are creating whole new points which u connect in same place , it is required to keep saved starting and ending point in order to make it work
 		if (event.IsButtonReleased(MouseCode::XYZ_MOUSE_BUTTON_LEFT))
 		{
-			size_t point = sc_InvalidPoint;
+			size_t point = m_EditedPoint;
 			if (m_FloorTest.GetPoint(mousePos, point) && point != m_StartPoint && point != m_EditedPoint)
 			{
 				m_FloorTest.Connect(m_StartPoint, point);

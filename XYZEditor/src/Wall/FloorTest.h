@@ -38,8 +38,8 @@ namespace XYZ {
 
 		void SubmitToRenderer();
 
-		size_t CreatePoint(const glm::vec3& point, const std::string& name);
-		size_t CreatePointFromPoint(const glm::vec3& point, size_t parent, const std::string& name);
+		int CreatePoint(const glm::vec3& point, const std::string& name);
+		int CreatePointFromPoint(const glm::vec3& point, size_t parent, const std::string& name);
 
 		void DestroyPoint(size_t index);
 
@@ -64,6 +64,8 @@ namespace XYZ {
 
 		std::vector<Data> m_RenderData;
 
+		std::vector<std::vector<Data>> m_Data;
+		std::vector<glm::mat4> m_Quads;
 
 		XYZ::Ref<XYZ::Mesh> m_Mesh;
 		XYZ::Ref<XYZ::Mesh> m_IntersectionMesh;

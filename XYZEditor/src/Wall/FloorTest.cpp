@@ -11,10 +11,13 @@ namespace XYZ{
 	static bool Collide(const glm::vec2& pointPos, const glm::vec2& mousePos)
 	{
 			return (
-			mousePos.x > pointPos.x - 2.0f / 2 && mousePos.x < pointPos.x + 2.0f / 2 &&
-			mousePos.y > pointPos.y - 2.0f / 2 && mousePos.y < pointPos.y + 2.0f / 2
+			mousePos.x > pointPos.x - 0.5f / 2 && mousePos.x < pointPos.x + 0.5f / 2 &&
+			mousePos.y > pointPos.y - 0.5f / 2 && mousePos.y < pointPos.y + 0.5f / 2
 				);
 	}
+
+	
+
 	static glm::vec3 LineLineIntersection(const glm::vec3& startA, const glm::vec3& endA, const glm::vec3& startB, const glm::vec3& endB)
 	{
 		// Line AB represented as a1x + b1y = c1 
@@ -103,26 +106,28 @@ namespace XYZ{
 	void FloorTest::SubmitToRenderer()
 	{
 		XYZ::MeshRenderer::SubmitMesh(glm::mat4(1), m_Mesh);
-
-
 		XYZ::MeshRenderer::SubmitMesh(glm::mat4(1), m_IntersectionMesh);
 	
+		for (auto& transform : m_Quads)
+		{
+			Renderer2D::SubmitQuad(transform, { 0,0,1,1 }, 1, { 1, 0, 0, 1 });
+		}
 		
 		for (size_t i  = 0; i < m_Lines.size(); i += 2)
 		{
 			XYZ::Renderer2D::SubmitLine(m_Lines[i].Point, m_Lines[i + 1].Point, m_Lines[i].Color);
 		}
 	}
-	size_t FloorTest::CreatePoint(const glm::vec3& point, const std::string& name)
+	int FloorTest::CreatePoint(const glm::vec3& point, const std::string& name)
 	{
-		size_t index = m_Graph.AddVertex(FloorNode{ name,point });
+		int index = m_Graph.AddVertex(FloorNode{ name,point });
 		m_RenderData.resize((size_t)m_Graph.GetData().Range() * (size_t)m_Graph.GetData().Range());
 		return index;
 	}
-	size_t FloorTest::CreatePointFromPoint(const glm::vec3& point, size_t parent, const std::string& name)
+	int FloorTest::CreatePointFromPoint(const glm::vec3& point, size_t parent, const std::string& name)
 	{	
-		size_t index = m_Graph.AddVertex(FloorNode{ name,point });
-		m_Graph.AddEdge({ parent,index });
+		int index = m_Graph.AddVertex(FloorNode{ name,point });
+		m_Graph.AddEdge({ parent,(size_t)index });
 		m_RenderData.resize((size_t)m_Graph.GetData().Range() * (size_t)m_Graph.GetData().Range());
 		return index;
 	}
@@ -146,27 +151,36 @@ namespace XYZ{
 
 	bool FloorTest::GetPoint(const glm::vec2& position, size_t& point)
 	{		
-		size_t counter = 0;
-		for (int i = 0; i < m_Graph.GetData().Range(); ++i)
-		{
-			auto& vertex = m_Graph.GetData()[i];
-			if (Collide(vertex.Data.Position, position))
+		bool found = false;
+		m_Graph.Traverse([&](GraphVertex<FloorNode>& source, GraphVertex<FloorNode>& destination, FloorNode* next, FloorNode* previous) {
+
+			if (point == source.Index || point == destination.Index)
+			{}
+			else if (Collide(source.Data.Position, position) && !found)
 			{
-				point = counter;
-				return true;
+				point = source.Index;
+				found = true;
+				return;
 			}
-			counter++;
-		}
-		return false;
+			else if (Collide(destination.Data.Position, position) && !found)
+			{
+				point = destination.Index;
+				found = true;
+				return;
+			}
+		});
+		
+		return found;
 	}
 
 	void FloorTest::GenerateMesh()
 	{
 		m_Mesh->TextureID = 1;
-		m_IntersectionMesh->TextureID = 1;	
+		m_IntersectionMesh->TextureID = 1;
 		m_Mesh->Vertices.clear();
 		m_Mesh->Indices.clear();
-	
+
+		m_Quads.clear();
 		m_Lines.clear();
 		m_IndexOffset = 0;
 
@@ -205,6 +219,7 @@ namespace XYZ{
 			}
 		}
 
+
 		
 		m_Graph.TraverseRecursive([&](FloorNode& source, FloorNode& destination,size_t parentIndex, size_t childIndex, FloorNode* next, FloorNode* previous, bool end){
 			
@@ -213,6 +228,11 @@ namespace XYZ{
 			
 			m_Lines.push_back({ {1,0,0,1}, source.Position });
 			m_Lines.push_back({ {1,0,0,1}, destination.Position });
+
+			auto& transform = glm::translate(glm::mat4(1), glm::vec3(source.Position)) * glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1), glm::vec3(0.5f, 0.5f, 1.0f));
+			m_Quads.push_back(transform);
+			transform = glm::translate(glm::mat4(1), glm::vec3(destination.Position)) * glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1), glm::vec3(0.5f, 0.5f, 1.0f));
+			m_Quads.push_back(transform);
 
 			if (next && previous)
 			{
@@ -241,9 +261,12 @@ namespace XYZ{
 			}
 
 			auto& current = m_RenderData[m_Graph.GetData().Range() * parentIndex + childIndex];
+			//current = m_Data[parentIndex][childIndex];
 			if (!current.Traversed)
 			{
 				auto& swapped = m_RenderData[m_Graph.GetData().Range() * childIndex + parentIndex];
+
+		
 				m_Mesh->Vertices.push_back(swapped.Points[0]);
 				m_Mesh->Vertices.push_back(swapped.Points[1]);
 	
@@ -259,6 +282,7 @@ namespace XYZ{
 				m_IndexOffset += 4;
 
 				current.Traversed = true;
+				swapped.Traversed = true;
 			}
 		});
 	}

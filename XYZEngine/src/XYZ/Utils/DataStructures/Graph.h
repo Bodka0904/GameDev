@@ -31,11 +31,11 @@ namespace XYZ {
 	class Graph
 	{
 	public:
-		size_t AddVertex(const T& data)
+		int AddVertex(const T& data)
 		{
 			GraphVertex<T> vertex(data, 0);
 			int index = m_Data.Insert(vertex);
-			vertex.Index = index;
+			m_Data[index].Index = index;
 
 			if (m_Data.Range() >= m_AdjList.size())
 				m_AdjList.resize(m_Data.Range());
@@ -74,7 +74,7 @@ namespace XYZ {
 			}
 		}
 
-		void RemoveData(size_t index)
+		void RemoveData(int index)
 		{	
 			if (DoubleSidedConnection)
 			{
@@ -82,11 +82,13 @@ namespace XYZ {
 				{
 					auto del = std::find(m_AdjList[it].begin(), m_AdjList[it].end(), index);
 					if (del != m_AdjList[it].end())
+					{
 						m_AdjList[it].erase(del);
+					}
 				}
 			}
-			m_AdjList[index].clear();
 
+			m_AdjList[index].clear();
 			m_Data.Erase(index);
 		}
 
@@ -107,7 +109,7 @@ namespace XYZ {
 					if (i > 0)
 						previous = &m_Data[adj[i - 1]].Data;
 					
-					func(m_Data[counter].Data, m_Data[adj[i]].Data, next, previous);
+					func(m_Data[counter], m_Data[adj[i]], next, previous);
 				}
 				
 				counter++;
