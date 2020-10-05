@@ -192,7 +192,7 @@ namespace XYZ{
 				glm::vec2 start = m_Graph.GetVertex(parent).Data.Position;
 				glm::vec2 end = m_Graph.GetVertex(list[parent][0]).Data.Position;
 				glm::vec2 defaultV = end - start;
-				std::sort(list[parent].begin() + 1, list[parent].end(), [&](size_t a, size_t b) {
+				std::sort(list[parent].begin(), list[parent].end(), [&](size_t a, size_t b) {
 
 					auto& p1 = m_Graph.GetVertex(parent).Data.Position;
 					auto& p00 = m_Graph.GetVertex(a).Data.Position;

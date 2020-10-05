@@ -64,7 +64,6 @@ namespace XYZ {
 
 		std::vector<Data> m_RenderData;
 
-		std::vector<std::vector<Data>> m_Data;
 		std::vector<glm::mat4> m_Quads;
 
 		XYZ::Ref<XYZ::Mesh> m_Mesh;

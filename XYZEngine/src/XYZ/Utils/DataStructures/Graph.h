@@ -121,7 +121,7 @@ namespace XYZ {
 			if (m_Visited.size() != m_AdjList.size())
 				m_Visited.resize(m_AdjList.size());
 
-			for (auto it : m_Visited)
+			for (auto &it : m_Visited)
 				it = false;
 
 			for (size_t i = 0; i < m_AdjList.size(); ++i)
