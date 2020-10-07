@@ -100,21 +100,12 @@ namespace XYZ {
 			{
 				for (size_t i = 0; i < adj.size(); ++i)
 				{
-					T* next = nullptr;
-					T* previous = nullptr;
-					if (i < adj.size() - 1)
-						next = &m_Data[adj[i + 1]].Data;
-					else if (i != 0)
-						next = &m_Data[adj[0]].Data;
-					if (i > 0)
-						previous = &m_Data[adj[i - 1]].Data;
-					
-					func(m_Data[counter], m_Data[adj[i]], next, previous);
+					func(m_Data[counter].Data, m_Data[adj[i]].Data, counter, adj[i]);
 				}
-				
 				counter++;
 			}
 		}
+
 		template <typename Func>
 		void TraverseRecursive(const Func& func)
 		{
@@ -195,7 +186,7 @@ namespace XYZ {
 			m_Visited[parent] = true;		
 			if (parent != child)
 			{
-				func(m_Data[parent].Data, m_Data[child].Data, parent, child, next, previous, m_AdjList[child].empty());			
+				func(m_Data[parent].Data, m_Data[child].Data, parent, child, next, previous, false);			
 			}	
 			for (size_t i = 0; i < m_AdjList[child].size(); ++i)
 			{

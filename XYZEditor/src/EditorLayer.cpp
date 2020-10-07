@@ -324,10 +324,12 @@ namespace XYZ {
 			size_t point = m_EditedPoint;
 			if (m_FloorTest.GetPoint(mousePos, point) && point != m_StartPoint && point != m_EditedPoint)
 			{
-				m_FloorTest.Connect(m_StartPoint, point);
 				m_FloorTest.DestroyPoint(m_EditedPoint);
-				m_FloorTest.GenerateMesh();
+				m_FloorTest.Connect(point, m_StartPoint);
+				
 			}	
+
+			m_FloorTest.GenerateMesh();
 		}
 
 		m_EditingPoint = false;
