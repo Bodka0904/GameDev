@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ParticleSystem2D.h"
 
-#include "XYZ/Renderer/RenderCommand.h"
+#include "XYZ/Renderer/Renderer.h"
 #include "XYZ/Renderer/Renderer2D.h"
 #include "XYZ/Renderer/RenderCommandQueue.h"
 
