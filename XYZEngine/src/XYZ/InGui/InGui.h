@@ -142,6 +142,9 @@ namespace XYZ {
 		uint32_t   ActiveWindowID  = NullID;
 		uint32_t   MovedWindowID   = NullID;
 		uint32_t   ResizedWindowID = NullID;
+
+		std::vector<bool> HandleInput;
+		size_t			  InputIndex = 0;
 	};
 
 

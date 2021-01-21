@@ -83,6 +83,7 @@ namespace XYZ {
 	{
 		XYZ_ASSERT(s_Context, "InGuiContext is not initialized");
 		s_Context->FrameData.ViewProjectionMatrix = viewProjectionMatrix;	
+		s_Context->FrameData.InputIndex = 0;
 	}
 
 	void InGui::EndFrame()
@@ -336,12 +337,24 @@ namespace XYZ {
 	{
 		XYZ_ASSERT(s_Context->FrameData.ActiveWindowID != InGuiFrameData::NullID, "Missing begin call");
 		InGuiWindow& window = s_Context->Windows[s_Context->FrameData.ActiveWindowID];
+		InGuiFrameData& data = s_Context->FrameData;
+
+
 
 		uint8_t returnType = 0;
 		size_t oldQuadCount = window.Mesh.Quads.size();
 		glm::vec4 color = s_Context->RenderData.Color[InGuiRenderData::DEFAULT_COLOR];
-		glm::vec2 genSize = InGuiFactory::GenerateQuadWithText(name, window, color, size, s_LayoutOffset, s_Context->RenderData, InGuiRenderData::BUTTON);
 
+		if (data.InputIndex == data.HandleInput.size())
+			data.HandleInput.push_back(false);
+
+		bool handleInput = data.HandleInput[data.InputIndex];
+		if (handleInput)
+		{
+			color = s_Context->RenderData.Color[InGuiRenderData::HOOVER_COLOR];
+		}
+
+		glm::vec2 genSize = InGuiFactory::GenerateQuadWithText(name, window, color, size, s_LayoutOffset, s_Context->RenderData, InGuiRenderData::BUTTON);
 		if (s_LayoutOffset.x + genSize.x >= window.Position.x + window.Size.x)
 		{
 			s_LayoutOffset.x += genSize.x + window.Layout.SpacingX;
@@ -351,16 +364,24 @@ namespace XYZ {
 		else if (s_HighestInRow < genSize.y)
 			s_HighestInRow = genSize.y;
 
-
-
+	
 		if (Collide(s_LayoutOffset, size, s_Context->FrameData.MousePosition))
 		{
 			returnType |= InGuiReturnType::Hoovered;
 			window.Mesh.Quads[oldQuadCount].Color = s_Context->RenderData.Color[InGuiRenderData::HOOVER_COLOR];
 			if (TurnOffFlag<uint16_t>(s_Context->FrameData.Flags, InGuiInputFlags::LeftClicked))
+			{
 				returnType |= InGuiReturnType::Clicked;
+				s_Context->FrameData.HandleInput[data.InputIndex].flip();
+				for (uint32_t i = 0; i < s_Context->FrameData.HandleInput.size(); ++i)
+				{
+					if (i != data.InputIndex)
+						s_Context->FrameData.HandleInput[i] = false;
+				}
+			}
 		}
 
+		data.InputIndex++;
 		s_LayoutOffset.x += genSize.x + window.Layout.SpacingX;
 		return returnType;
 	}

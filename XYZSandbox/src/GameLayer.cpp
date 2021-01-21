@@ -128,6 +128,11 @@ namespace XYZ {
 
 			InGui::Separator();
 			InGui::Button("Buttonik", glm::vec2(50.0f, 50.0f));
+
+			InGui::Float("Retard", glm::vec2(50.0f), m_Value);
+			InGui::Float("Retard", glm::vec2(50.0f), m_Value);
+			InGui::Float("Retard", glm::vec2(50.0f), m_Value);
+			InGui::Float("Retard", glm::vec2(50.0f), m_Value);
 		}
 		else
 		{
